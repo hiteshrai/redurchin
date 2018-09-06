@@ -1,0 +1,164 @@
+<?xml version="1.0"?>
+<EmbeddedProfile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <ToolchainID>com.visualgdb.arm-eabi</ToolchainID>
+  <ToolchainVersion>
+    <GCC>7.2.0</GCC>
+    <GDB>8.0.1</GDB>
+    <Revision>3</Revision>
+  </ToolchainVersion>
+  <BspID>com.visualgdb.bsp.in-place</BspID>
+  <McuID>MKL27Z64VLH4</McuID>
+  <BSPSubdirectory>BSP</BSPSubdirectory>
+  <MCUDefinitionFile>KL27Z644.xml</MCUDefinitionFile>
+  <BSPSourceFolderName>Device-specific files</BSPSourceFolderName>
+  <InPlaceMCU>
+    <ID>MKL27Z64VLH4</ID>
+    <UserFriendlyName>MKL27Z64VLH4</UserFriendlyName>
+    <CompilationFlags>
+      <PreprocessorMacros>
+        <string>ARM_MATH_CM0PLUS</string>
+        <string>MKL27Z64VLH4</string>
+        <string>CPU_MKL27Z64VLH4</string>
+      </PreprocessorMacros>
+      <IncludeDirectories>
+        <string>$$SYS:BSP_ROOT$$/KL27Z644/StartupFiles</string>
+        <string>$$SYS:BSP_ROOT$$/platform/devices/MKL27Z644/startup</string>
+        <string>$$SYS:BSP_ROOT$$/platform/CMSIS/Include</string>
+        <string>$$SYS:BSP_ROOT$$/platform/devices</string>
+        <string>$$SYS:BSP_ROOT$$/platform/devices/MKL27Z644/include</string>
+      </IncludeDirectories>
+      <LDFLAGS>--specs=nano.specs --specs=nosys.specs</LDFLAGS>
+      <LinkerScript>$$SYS:BSP_ROOT$$/KL27Z644/LinkerScripts/MKL27Z64xxx4_flash.lds</LinkerScript>
+      <COMMONFLAGS>-mcpu=cortex-m0plus -mthumb</COMMONFLAGS>
+      <EnableLinkerGroups>true</EnableLinkerGroups>
+    </CompilationFlags>
+    <AdditionalSourceFiles>
+      <string>$$SYS:BSP_ROOT$$/KL27Z644/StartupFiles/startup.c</string>
+      <string>$$SYS:BSP_ROOT$$/KL27Z644/StartupFiles/vectors_KL27Z644.c</string>
+      <string>$$SYS:BSP_ROOT$$/platform/devices/MKL27Z644/startup/system_MKL27Z644.c</string>
+      <string>$$SYS:BSP_ROOT$$/KL27Z644/StartupFiles/startup.c</string>
+    </AdditionalSourceFiles>
+    <AdditionalHeaderFiles>
+      <string>$$SYS:BSP_ROOT$$/platform/CMSIS/Include/arm_common_tables.h</string>
+      <string>$$SYS:BSP_ROOT$$/platform/CMSIS/Include/arm_const_structs.h</string>
+      <string>$$SYS:BSP_ROOT$$/platform/CMSIS/Include/arm_math.h</string>
+      <string>$$SYS:BSP_ROOT$$/platform/CMSIS/Include/core_cm0plus.h</string>
+      <string>$$SYS:BSP_ROOT$$/platform/CMSIS/Include/core_cm4.h</string>
+      <string>$$SYS:BSP_ROOT$$/platform/CMSIS/Include/core_cm7.h</string>
+      <string>$$SYS:BSP_ROOT$$/platform/CMSIS/Include/core_cmFunc.h</string>
+      <string>$$SYS:BSP_ROOT$$/platform/CMSIS/Include/core_cmInstr.h</string>
+      <string>$$SYS:BSP_ROOT$$/platform/CMSIS/Include/core_cmSimd.h</string>
+      <string>$$SYS:BSP_ROOT$$/platform/devices/fsl_device_registers.h</string>
+      <string>$$SYS:BSP_ROOT$$/platform/devices/MKL27Z644/include/fsl_bitaccess.h</string>
+      <string>$$SYS:BSP_ROOT$$/platform/devices/MKL27Z644/include/MKL27Z644.h</string>
+      <string>$$SYS:BSP_ROOT$$/platform/devices/MKL27Z644/include/MKL27Z644_extension.h</string>
+      <string>$$SYS:BSP_ROOT$$/platform/devices/MKL27Z644/include/MKL27Z644_features.h</string>
+      <string>$$SYS:BSP_ROOT$$/platform/devices/MKL27Z644/startup/system_MKL27Z644.h</string>
+    </AdditionalHeaderFiles>
+    <AdditionalSystemVars>
+      <SysVarEntry>
+        <Key>com.sysprogs.bspoptions.arm.core</Key>
+        <Value>M0</Value>
+      </SysVarEntry>
+      <SysVarEntry>
+        <Key>com.sysprogs.arm.kinetis.gpio_prefix</Key>
+        <Value>GPIO</Value>
+      </SysVarEntry>
+    </AdditionalSystemVars>
+    <ConfigurableProperties>
+      <PropertyGroups>
+        <PropertyGroup>
+          <Properties>
+            <PropertyEntry xsi:type="Enumerated">
+              <Name>Execute from</Name>
+              <UniqueID>com.sysprogs.bspoptions.primary_memory</UniqueID>
+              <OmitPrefixIfEmpty>false</OmitPrefixIfEmpty>
+              <SuggestionList>
+                <Suggestion>
+                  <UserFriendlyName>FLASH</UserFriendlyName>
+                  <InternalValue>flash</InternalValue>
+                </Suggestion>
+                <Suggestion>
+                  <UserFriendlyName>SRAM</UserFriendlyName>
+                  <InternalValue>sram</InternalValue>
+                </Suggestion>
+              </SuggestionList>
+              <DefaultEntryIndex>0</DefaultEntryIndex>
+              <AllowFreeEntry>false</AllowFreeEntry>
+            </PropertyEntry>
+            <PropertyEntry xsi:type="Boolean">
+              <Name>Disable Watchdog</Name>
+              <UniqueID>com.sysprogs.bspoptions.wdog</UniqueID>
+              <OmitPrefixIfEmpty>false</OmitPrefixIfEmpty>
+              <DefaultValue>true</DefaultValue>
+              <ValueForTrue>DISABLE_WDOG</ValueForTrue>
+            </PropertyEntry>
+            <PropertyEntry xsi:type="Enumerated">
+              <Name>C Library Type</Name>
+              <UniqueID>com.sysprogs.toolchainoptions.arm.libctype</UniqueID>
+              <OmitPrefixIfEmpty>false</OmitPrefixIfEmpty>
+              <SuggestionList>
+                <Suggestion>
+                  <UserFriendlyName>Default</UserFriendlyName>
+                  <InternalValue />
+                </Suggestion>
+                <Suggestion>
+                  <UserFriendlyName>Newlib-nano</UserFriendlyName>
+                  <InternalValue>--specs=nano.specs</InternalValue>
+                </Suggestion>
+                <Suggestion>
+                  <UserFriendlyName>Newlib-nano with floating point support in printf()</UserFriendlyName>
+                  <InternalValue>--specs=nano.specs -u _printf_float</InternalValue>
+                </Suggestion>
+                <Suggestion>
+                  <UserFriendlyName>Newlib-nano with floating point support in printf() and scanf()</UserFriendlyName>
+                  <InternalValue>--specs=nano.specs -u _printf_float -u _scanf_float</InternalValue>
+                </Suggestion>
+              </SuggestionList>
+              <DefaultEntryIndex>1</DefaultEntryIndex>
+              <AllowFreeEntry>false</AllowFreeEntry>
+            </PropertyEntry>
+            <PropertyEntry xsi:type="Enumerated">
+              <Name>Implementations for _sbrk(), etc.</Name>
+              <UniqueID>com.sysprogs.toolchainoptions.arm.libnosys</UniqueID>
+              <OmitPrefixIfEmpty>false</OmitPrefixIfEmpty>
+              <SuggestionList>
+                <Suggestion>
+                  <UserFriendlyName>None</UserFriendlyName>
+                  <InternalValue />
+                </Suggestion>
+                <Suggestion>
+                  <UserFriendlyName>Minimal (no semihosting)</UserFriendlyName>
+                  <InternalValue>--specs=nosys.specs</InternalValue>
+                </Suggestion>
+                <Suggestion>
+                  <UserFriendlyName>Support semihosting</UserFriendlyName>
+                  <InternalValue>--specs=rdimon.specs</InternalValue>
+                </Suggestion>
+              </SuggestionList>
+              <DefaultEntryIndex>1</DefaultEntryIndex>
+              <AllowFreeEntry>false</AllowFreeEntry>
+            </PropertyEntry>
+          </Properties>
+          <CollapsedByDefault>false</CollapsedByDefault>
+        </PropertyGroup>
+      </PropertyGroups>
+    </ConfigurableProperties>
+    <HierarchicalPath>Kinetis\KL27Z644</HierarchicalPath>
+    <FamilyID>KL27Z644</FamilyID>
+    <FLASHSize>64496</FLASHSize>
+    <RAMSize>16384</RAMSize>
+    <FLASHBase>1040</FLASHBase>
+    <RAMBase>536866816</RAMBase>
+    <MCUDefinitionFile>KL27Z644.xml</MCUDefinitionFile>
+    <AdditionalSourcesRequiredForTesting>false</AdditionalSourcesRequiredForTesting>
+  </InPlaceMCU>
+  <MCUMakFile>kinetis.mak</MCUMakFile>
+  <ReferencedFrameworks />
+  <FrameworkProperties>
+    <Entries />
+  </FrameworkProperties>
+  <TestFrameworkProperties>
+    <Entries />
+  </TestFrameworkProperties>
+</EmbeddedProfile>
