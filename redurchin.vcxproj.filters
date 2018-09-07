@@ -22,11 +22,20 @@
     <Filter Include="VisualGDB settings">
       <UniqueIdentifier>{31527ef8-d7a4-4177-93d8-9159390c6026}</UniqueIdentifier>
     </Filter>
+    <Filter Include="app">
+      <UniqueIdentifier>{34399e34-c308-495e-99d6-5ecdea357f76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="drivers">
+      <UniqueIdentifier>{eeb458bc-3c08-4972-be57-9fa422594979}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="drivers\KL27">
+      <UniqueIdentifier>{a12ffb49-be39-4eda-853f-e7c119973c6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thirdparty">
+      <UniqueIdentifier>{c1efc54a-39c3-492e-aa22-a795a9679316}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="LEDBlink.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
     <None Include="kinetis.props">
       <Filter>Source files\Device-specific files</Filter>
     </None>
@@ -93,5 +102,84 @@
     <None Include="kinetis.xml">
       <Filter>VisualGDB settings</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="drivers\KL27\usb_device_cdc_acm.c">
+      <Filter>drivers\KL27</Filter>
+    </ClCompile>
+    <ClCompile Include="drivers\KL27\usb_device_ch9.c">
+      <Filter>drivers\KL27</Filter>
+    </ClCompile>
+    <ClCompile Include="drivers\KL27\usb_device_descriptor.c">
+      <Filter>drivers\KL27</Filter>
+    </ClCompile>
+    <ClCompile Include="drivers\KL27\board.c">
+      <Filter>drivers\KL27</Filter>
+    </ClCompile>
+    <ClCompile Include="drivers\KL27\clock_config.c">
+      <Filter>drivers\KL27</Filter>
+    </ClCompile>
+    <ClCompile Include="drivers\KL27\pin_mux.c">
+      <Filter>drivers\KL27</Filter>
+    </ClCompile>
+    <ClCompile Include="app\main.c">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\Kinetis-SDK\middleware\usb\device\usb_device_dci.c">
+      <Filter>thirdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\Kinetis-SDK\middleware\usb\device\usb_device_khci.c">
+      <Filter>thirdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\Kinetis-SDK\middleware\usb\osa\usb_osa_bm.c">
+      <Filter>thirdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\drivers\fsl_clock.c">
+      <Filter>thirdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\utilities\fsl_debug_console.c">
+      <Filter>thirdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\utilities\log\fsl_log.c">
+      <Filter>thirdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\utilities\str\fsl_str.c">
+      <Filter>thirdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\utilities\io\fsl_io.c">
+      <Filter>thirdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\drivers\fsl_uart.c">
+      <Filter>thirdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\drivers\fsl_lpuart.c">
+      <Filter>thirdparty</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="drivers\KL27\usb_device_cdc_acm.h">
+      <Filter>drivers\KL27</Filter>
+    </ClInclude>
+    <ClInclude Include="drivers\KL27\usb_device_ch9.h">
+      <Filter>drivers\KL27</Filter>
+    </ClInclude>
+    <ClInclude Include="drivers\KL27\usb_device_config.h">
+      <Filter>drivers\KL27</Filter>
+    </ClInclude>
+    <ClInclude Include="drivers\KL27\usb_device_descriptor.h">
+      <Filter>drivers\KL27</Filter>
+    </ClInclude>
+    <ClInclude Include="drivers\KL27\virtual_com.h">
+      <Filter>drivers\KL27</Filter>
+    </ClInclude>
+    <ClInclude Include="drivers\KL27\board.h">
+      <Filter>drivers\KL27</Filter>
+    </ClInclude>
+    <ClInclude Include="drivers\KL27\clock_config.h">
+      <Filter>drivers\KL27</Filter>
+    </ClInclude>
+    <ClInclude Include="drivers\KL27\pin_mux.h">
+      <Filter>drivers\KL27</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

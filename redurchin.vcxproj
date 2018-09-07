@@ -39,7 +39,21 @@
     <ToolchainID>com.visualgdb.arm-eabi</ToolchainID>
     <ToolchainVersion>7.2.0/8.0.1/r3</ToolchainVersion>
   </PropertyGroup>
-  <ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|VisualGDB'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>drivers/KL27;thirdparty/Kinetis-SDK/devices/MKL27Z644/drivers;thirdparty/Kinetis-SDK/devices/MKL27Z644/utilities;thirdparty/Kinetis-SDK/middleware/usb/device;thirdparty/Kinetis-SDK/middleware/usb/include;thirdparty/Kinetis-SDK/middleware/usb/osa;thirdparty/Kinetis-SDK/devices/MKL27Z644/utilities/log;thirdparty/Kinetis-SDK/devices/MKL27Z644/utilities/str;thirdparty/Kinetis-SDK/devices/MKL27Z644/utilities/io;%(ClCompile.AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>DEBUG=1;SDK_OS_BAREMETAL;%(ClCompile.PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalOptions />
+      <CLanguageStandard />
+      <CPPLanguageStandard />
+    </ClCompile>
+    <Link>
+      <LibrarySearchDirectories>%(Link.LibrarySearchDirectories)</LibrarySearchDirectories>
+      <AdditionalLibraryNames>%(Link.AdditionalLibraryNames)</AdditionalLibraryNames>
+      <AdditionalLinkerInputs>%(Link.AdditionalLinkerInputs)</AdditionalLinkerInputs>
+      <LinkerScript />
+      <AdditionalOptions />
+    </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
   </ItemGroup>
@@ -47,7 +61,31 @@
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
   <ItemGroup>
-    <ClCompile Include="LEDBlink.cpp" />
+    <ClCompile Include="app\main.c" />
+    <ClCompile Include="drivers\KL27\board.c" />
+    <ClCompile Include="drivers\KL27\clock_config.c" />
+    <ClCompile Include="drivers\KL27\pin_mux.c" />
+    <ClCompile Include="drivers\KL27\usb_device_cdc_acm.c" />
+    <ClCompile Include="drivers\KL27\usb_device_ch9.c" />
+    <ClCompile Include="drivers\KL27\usb_device_descriptor.c" />
+    <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\drivers\fsl_clock.c" />
+    <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\drivers\fsl_lpuart.c" />
+    <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\drivers\fsl_uart.c" />
+    <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\utilities\fsl_debug_console.c" />
+    <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\utilities\io\fsl_io.c" />
+    <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\utilities\log\fsl_log.c" />
+    <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\utilities\str\fsl_str.c" />
+    <ClCompile Include="thirdparty\Kinetis-SDK\middleware\usb\device\usb_device_dci.c" />
+    <ClCompile Include="thirdparty\Kinetis-SDK\middleware\usb\device\usb_device_khci.c" />
+    <ClCompile Include="thirdparty\Kinetis-SDK\middleware\usb\osa\usb_osa_bm.c" />
+    <ClInclude Include="drivers\KL27\board.h" />
+    <ClInclude Include="drivers\KL27\clock_config.h" />
+    <ClInclude Include="drivers\KL27\pin_mux.h" />
+    <ClInclude Include="drivers\KL27\usb_device_cdc_acm.h" />
+    <ClInclude Include="drivers\KL27\usb_device_ch9.h" />
+    <ClInclude Include="drivers\KL27\usb_device_config.h" />
+    <ClInclude Include="drivers\KL27\usb_device_descriptor.h" />
+    <ClInclude Include="drivers\KL27\virtual_com.h" />
     <None Include="kinetis.props" />
     <ClCompile Include="$(BSP_ROOT)\KL27Z644\StartupFiles\startup.c" />
     <ClCompile Include="$(BSP_ROOT)\KL27Z644\StartupFiles\vectors_KL27Z644.c" />
