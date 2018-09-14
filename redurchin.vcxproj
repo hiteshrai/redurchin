@@ -41,16 +41,16 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|VisualGDB'">
     <ClCompile>
-      <AdditionalIncludeDirectories>drivers/KL27;thirdparty/Kinetis-SDK/devices/MKL27Z644/drivers;thirdparty/Kinetis-SDK/devices/MKL27Z644/utilities;thirdparty/Kinetis-SDK/middleware/usb/device;thirdparty/Kinetis-SDK/middleware/usb/include;thirdparty/Kinetis-SDK/middleware/usb/osa;thirdparty/Kinetis-SDK/devices/MKL27Z644/utilities/log;thirdparty/Kinetis-SDK/devices/MKL27Z644/utilities/str;thirdparty/Kinetis-SDK/devices/MKL27Z644/utilities/io;thirdparty/Kinetis-SDK/devices/MKL27Z644;thirdparty/Kinetis-SDK/CMSIS/Include;%(ClCompile.AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>drivers/KL27;thirdparty/Kinetis-SDK/devices/MKL27Z644/drivers;thirdparty/Kinetis-SDK/devices/MKL27Z644/utilities;thirdparty/Kinetis-SDK/middleware/usb/device;thirdparty/Kinetis-SDK/middleware/usb/include;thirdparty/Kinetis-SDK/middleware/usb/osa;thirdparty/Kinetis-SDK/devices/MKL27Z644/utilities/log;thirdparty/Kinetis-SDK/devices/MKL27Z644/utilities/str;thirdparty/Kinetis-SDK/devices/MKL27Z644/utilities/io;thirdparty/Kinetis-SDK/devices/MKL27Z644;thirdparty/Kinetis-SDK/CMSIS/Include;.;drivers;%(ClCompile.AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>DEBUG=1;SDK_OS_BAREMETAL;%(ClCompile.PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions />
       <CLanguageStandard />
       <CPPLanguageStandard />
     </ClCompile>
     <Link>
-      <LibrarySearchDirectories>;%(Link.LibrarySearchDirectories)</LibrarySearchDirectories>
-      <AdditionalLibraryNames>;%(Link.AdditionalLibraryNames)</AdditionalLibraryNames>
-      <AdditionalLinkerInputs>;%(Link.AdditionalLinkerInputs)</AdditionalLinkerInputs>
+      <LibrarySearchDirectories>%(Link.LibrarySearchDirectories)</LibrarySearchDirectories>
+      <AdditionalLibraryNames>%(Link.AdditionalLibraryNames)</AdditionalLibraryNames>
+      <AdditionalLinkerInputs>%(Link.AdditionalLinkerInputs)</AdditionalLinkerInputs>
       <LinkerScript>.\MKL27Z64xxx4_flash.lds</LinkerScript>
       <AdditionalOptions />
     </Link>
@@ -64,15 +64,18 @@
     <ClCompile Include="app\main.c" />
     <ClCompile Include="drivers\KL27\board.c" />
     <ClCompile Include="drivers\KL27\clock_config.c" />
+    <ClCompile Include="drivers\KL27\hardware.c" />
     <ClCompile Include="drivers\KL27\pin_mux.c" />
+    <ClCompile Include="drivers\KL27\usb_cdc.c" />
     <ClCompile Include="drivers\KL27\usb_device_cdc_acm.c" />
     <ClCompile Include="drivers\KL27\usb_device_ch9.c" />
     <ClCompile Include="drivers\KL27\usb_device_descriptor.c" />
+    <ClCompile Include="thirdparty\BSP\startup.c" />
+    <ClCompile Include="thirdparty\BSP\system_MKL27Z644.c" />
+    <ClCompile Include="thirdparty\BSP\vectors_KL27Z644.c" />
     <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\drivers\fsl_clock.c" />
     <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\drivers\fsl_lpuart.c" />
     <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\drivers\fsl_uart.c" />
-    <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\mcuxpresso\startup_mkl27z644.c" />
-    <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\system_MKL27Z644.c" />
     <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\utilities\fsl_debug_console.c" />
     <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\utilities\io\fsl_io.c" />
     <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\utilities\log\fsl_log.c" />
@@ -80,6 +83,7 @@
     <ClCompile Include="thirdparty\Kinetis-SDK\middleware\usb\device\usb_device_dci.c" />
     <ClCompile Include="thirdparty\Kinetis-SDK\middleware\usb\device\usb_device_khci.c" />
     <ClCompile Include="thirdparty\Kinetis-SDK\middleware\usb\osa\usb_osa_bm.c" />
+    <ClInclude Include="drivers\hardware.h" />
     <ClInclude Include="drivers\KL27\board.h" />
     <ClInclude Include="drivers\KL27\clock_config.h" />
     <ClInclude Include="drivers\KL27\pin_mux.h" />
@@ -88,6 +92,7 @@
     <ClInclude Include="drivers\KL27\usb_device_config.h" />
     <ClInclude Include="drivers\KL27\usb_device_descriptor.h" />
     <ClInclude Include="drivers\KL27\virtual_com.h" />
+    <ClInclude Include="drivers\usb_cdc.h" />
     <None Include="kinetis.props" />
     <ClInclude Include="$(BSP_ROOT)\platform\CMSIS\Include\arm_common_tables.h" />
     <ClInclude Include="$(BSP_ROOT)\platform\CMSIS\Include\arm_const_structs.h" />

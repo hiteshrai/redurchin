@@ -146,10 +146,19 @@
     <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\drivers\fsl_lpuart.c">
       <Filter>thirdparty</Filter>
     </ClCompile>
-    <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\system_MKL27Z644.c">
+    <ClCompile Include="drivers\KL27\hardware.c">
+      <Filter>drivers\KL27</Filter>
+    </ClCompile>
+    <ClCompile Include="drivers\KL27\usb_cdc.c">
+      <Filter>drivers\KL27</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\BSP\startup.c">
       <Filter>Source files\Device-specific files</Filter>
     </ClCompile>
-    <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\mcuxpresso\startup_mkl27z644.c">
+    <ClCompile Include="thirdparty\BSP\system_MKL27Z644.c">
+      <Filter>Source files\Device-specific files</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\BSP\vectors_KL27Z644.c">
       <Filter>Source files\Device-specific files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -177,6 +186,12 @@
     </ClInclude>
     <ClInclude Include="drivers\KL27\pin_mux.h">
       <Filter>drivers\KL27</Filter>
+    </ClInclude>
+    <ClInclude Include="drivers\hardware.h">
+      <Filter>drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="drivers\usb_cdc.h">
+      <Filter>drivers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
