@@ -41,17 +41,17 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|VisualGDB'">
     <ClCompile>
-      <AdditionalIncludeDirectories>drivers/KL27;thirdparty/Kinetis-SDK/devices/MKL27Z644/drivers;thirdparty/Kinetis-SDK/devices/MKL27Z644/utilities;thirdparty/Kinetis-SDK/middleware/usb/device;thirdparty/Kinetis-SDK/middleware/usb/include;thirdparty/Kinetis-SDK/middleware/usb/osa;thirdparty/Kinetis-SDK/devices/MKL27Z644/utilities/log;thirdparty/Kinetis-SDK/devices/MKL27Z644/utilities/str;thirdparty/Kinetis-SDK/devices/MKL27Z644/utilities/io;%(ClCompile.AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>drivers/KL27;thirdparty/Kinetis-SDK/devices/MKL27Z644/drivers;thirdparty/Kinetis-SDK/devices/MKL27Z644/utilities;thirdparty/Kinetis-SDK/middleware/usb/device;thirdparty/Kinetis-SDK/middleware/usb/include;thirdparty/Kinetis-SDK/middleware/usb/osa;thirdparty/Kinetis-SDK/devices/MKL27Z644/utilities/log;thirdparty/Kinetis-SDK/devices/MKL27Z644/utilities/str;thirdparty/Kinetis-SDK/devices/MKL27Z644/utilities/io;thirdparty/Kinetis-SDK/devices/MKL27Z644;thirdparty/Kinetis-SDK/CMSIS/Include;%(ClCompile.AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>DEBUG=1;SDK_OS_BAREMETAL;%(ClCompile.PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions />
       <CLanguageStandard />
       <CPPLanguageStandard />
     </ClCompile>
     <Link>
-      <LibrarySearchDirectories>%(Link.LibrarySearchDirectories)</LibrarySearchDirectories>
-      <AdditionalLibraryNames>%(Link.AdditionalLibraryNames)</AdditionalLibraryNames>
-      <AdditionalLinkerInputs>%(Link.AdditionalLinkerInputs)</AdditionalLinkerInputs>
-      <LinkerScript />
+      <LibrarySearchDirectories>;%(Link.LibrarySearchDirectories)</LibrarySearchDirectories>
+      <AdditionalLibraryNames>;%(Link.AdditionalLibraryNames)</AdditionalLibraryNames>
+      <AdditionalLinkerInputs>;%(Link.AdditionalLinkerInputs)</AdditionalLinkerInputs>
+      <LinkerScript>.\MKL27Z64xxx4_flash.lds</LinkerScript>
       <AdditionalOptions />
     </Link>
   </ItemDefinitionGroup>
@@ -71,6 +71,8 @@
     <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\drivers\fsl_clock.c" />
     <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\drivers\fsl_lpuart.c" />
     <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\drivers\fsl_uart.c" />
+    <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\mcuxpresso\startup_mkl27z644.c" />
+    <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\system_MKL27Z644.c" />
     <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\utilities\fsl_debug_console.c" />
     <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\utilities\io\fsl_io.c" />
     <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\utilities\log\fsl_log.c" />
@@ -87,9 +89,6 @@
     <ClInclude Include="drivers\KL27\usb_device_descriptor.h" />
     <ClInclude Include="drivers\KL27\virtual_com.h" />
     <None Include="kinetis.props" />
-    <ClCompile Include="$(BSP_ROOT)\KL27Z644\StartupFiles\startup.c" />
-    <ClCompile Include="$(BSP_ROOT)\KL27Z644\StartupFiles\vectors_KL27Z644.c" />
-    <ClCompile Include="$(BSP_ROOT)\platform\devices\MKL27Z644\startup\system_MKL27Z644.c" />
     <ClInclude Include="$(BSP_ROOT)\platform\CMSIS\Include\arm_common_tables.h" />
     <ClInclude Include="$(BSP_ROOT)\platform\CMSIS\Include\arm_const_structs.h" />
     <ClInclude Include="$(BSP_ROOT)\platform\CMSIS\Include\arm_math.h" />

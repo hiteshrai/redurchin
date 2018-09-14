@@ -39,15 +39,6 @@
     <None Include="kinetis.props">
       <Filter>Source files\Device-specific files</Filter>
     </None>
-    <ClCompile Include="$(BSP_ROOT)\KL27Z644\StartupFiles\startup.c">
-      <Filter>Source files\Device-specific files</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BSP_ROOT)\KL27Z644\StartupFiles\vectors_KL27Z644.c">
-      <Filter>Source files\Device-specific files</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BSP_ROOT)\platform\devices\MKL27Z644\startup\system_MKL27Z644.c">
-      <Filter>Source files\Device-specific files</Filter>
-    </ClCompile>
     <ClInclude Include="$(BSP_ROOT)\platform\CMSIS\Include\arm_common_tables.h">
       <Filter>Header files\Device-specific files</Filter>
     </ClInclude>
@@ -154,6 +145,12 @@
     </ClCompile>
     <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\drivers\fsl_lpuart.c">
       <Filter>thirdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\system_MKL27Z644.c">
+      <Filter>Source files\Device-specific files</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\mcuxpresso\startup_mkl27z644.c">
+      <Filter>Source files\Device-specific files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
