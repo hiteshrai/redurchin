@@ -217,11 +217,7 @@ void BOARD_BootClockVLPR(void)
     CLOCK_SetSimConfig(&simConfig_BOARD_BootClockVLPR);
     /* Set VLPR power mode. */
     SMC_SetPowerModeProtection(SMC, kSMC_AllowPowerModeAll);
-#if (defined(FSL_FEATURE_SMC_HAS_LPWUI) && FSL_FEATURE_SMC_HAS_LPWUI)
-    SMC_SetPowerModeVlpr(SMC, false);
-#else
     SMC_SetPowerModeVlpr(SMC);
-#endif
     while (SMC_GetPowerModeState(SMC) != kSMC_PowerStateVlpr)
     {
     }

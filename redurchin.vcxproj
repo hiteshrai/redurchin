@@ -63,6 +63,7 @@
   <ItemGroup>
     <ClCompile Include="app\main.c" />
     <ClCompile Include="drivers\KL27\board.c" />
+    <ClCompile Include="drivers\KL27\clock.c" />
     <ClCompile Include="drivers\KL27\clock_config.c" />
     <ClCompile Include="drivers\KL27\hardware.c" />
     <ClCompile Include="drivers\KL27\pin_mux.c" />
@@ -74,6 +75,7 @@
     <ClCompile Include="thirdparty\BSP\system_MKL27Z644.c" />
     <ClCompile Include="thirdparty\BSP\vectors_KL27Z644.c" />
     <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\drivers\fsl_clock.c" />
+    <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\drivers\fsl_lptmr.c" />
     <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\drivers\fsl_lpuart.c" />
     <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\drivers\fsl_uart.c" />
     <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\utilities\fsl_debug_console.c" />
@@ -83,6 +85,7 @@
     <ClCompile Include="thirdparty\Kinetis-SDK\middleware\usb\device\usb_device_dci.c" />
     <ClCompile Include="thirdparty\Kinetis-SDK\middleware\usb\device\usb_device_khci.c" />
     <ClCompile Include="thirdparty\Kinetis-SDK\middleware\usb\osa\usb_osa_bm.c" />
+    <ClInclude Include="drivers\clock.h" />
     <ClInclude Include="drivers\hardware.h" />
     <ClInclude Include="drivers\KL27\board.h" />
     <ClInclude Include="drivers\KL27\clock_config.h" />
