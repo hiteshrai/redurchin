@@ -167,6 +167,24 @@
     <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\drivers\fsl_lptmr.c">
       <Filter>thirdparty</Filter>
     </ClCompile>
+    <ClCompile Include="drivers\KL27\spi.c">
+      <Filter>drivers\KL27</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\drivers\fsl_spi.c">
+      <Filter>thirdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="drivers\KL27\analog.c">
+      <Filter>drivers\KL27</Filter>
+    </ClCompile>
+    <ClCompile Include="drivers\KL27\pwm.c">
+      <Filter>drivers\KL27</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\drivers\fsl_gpio.c">
+      <Filter>thirdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\drivers\fsl_tpm.c">
+      <Filter>thirdparty</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="drivers\KL27\usb_device_cdc_acm.h">
@@ -201,6 +219,18 @@
     </ClInclude>
     <ClInclude Include="drivers\clock.h">
       <Filter>drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="drivers\KL27\spi.h">
+      <Filter>drivers\KL27</Filter>
+    </ClInclude>
+    <ClInclude Include="drivers\analog.h">
+      <Filter>drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="drivers\KL27\custom_board.h">
+      <Filter>drivers\KL27</Filter>
+    </ClInclude>
+    <ClInclude Include="drivers\KL27\pwm.h">
+      <Filter>drivers\KL27</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

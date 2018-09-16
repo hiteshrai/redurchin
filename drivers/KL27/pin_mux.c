@@ -79,7 +79,7 @@ void BOARD_InitPins(void)
 
     /* PORTA2 (pin 24) is configured as LPUART0_TX */
     PORT_SetPinMux(PORTA, 2U, kPORT_MuxAlt2);
-
+	
     SIM->SOPT5 = ((SIM->SOPT5 &
                    /* Mask bits to zero which are setting */
                    (~(SIM_SOPT5_LPUART0TXSRC_MASK | SIM_SOPT5_LPUART0RXSRC_MASK)))
