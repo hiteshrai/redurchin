@@ -80,6 +80,13 @@ void BOARD_InitPins(void)
     /* PORTA2 (pin 24) is configured as LPUART0_TX */
     PORT_SetPinMux(PORTA, 2U, kPORT_MuxAlt2);
 	
+	SIM->SOPT4 = ((SIM->SOPT4 &
+			   /* Mask bits to zero which are setting */
+			   (~(SIM_SOPT4_TPM2CH0SRC_MASK)))
+
+			  /* TPM2 Channel 0 Input Capture Source Select: TPM2_CH0 signal. */
+			  | SIM_SOPT4_TPM2CH0SRC(SOPT4_TPM2CH0SRC_TPM2_CH0));
+	
     SIM->SOPT5 = ((SIM->SOPT5 &
                    /* Mask bits to zero which are setting */
                    (~(SIM_SOPT5_LPUART0TXSRC_MASK | SIM_SOPT5_LPUART0RXSRC_MASK)))
