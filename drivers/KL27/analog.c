@@ -24,7 +24,7 @@
 
 // IRQ handling
 #define ANALOG_READY_IRQ          PORTB_PORTC_PORTD_PORTE_IRQn
-#define ANALOG_READY_IRQ_HANDLER  PORTB_PORTC_PORTD_PORTE_IRQHandler
+#define ANALOG_READY_IRQ_HANDLER  PORTBCDE_IRQHandler
 
 #define SELECT_CHIP(x)            GPIO_PinWrite(ANALOG_SPI_GPIO, x, 0)
 #define DESELECT_CHIP(x)          GPIO_PinWrite(ANALOG_SPI_GPIO, x, 1)
@@ -49,12 +49,6 @@ void ANALOG_READY_IRQ_HANDLER(void)
 	{
 		analog_ready_callback();
 	}
-	
-	/* Add for ARM errata 838869, affects Cortex-M4, Cortex-M4F Store immediate overlapping
-  exception return operation might vector to incorrect interrupt */
-#if defined __CORTEX_M && (__CORTEX_M == 4U)
-	__DSB();
-#endif
 }
 
 
@@ -67,8 +61,8 @@ static void setup_rdy_pin(void)
 	};
 	
 	PORT_SetPinInterruptConfig(ANALOG_PORT, ANALOG_READY_PIN, kPORT_InterruptFallingEdge);
-	EnableIRQ(ANALOG_READY_IRQ);
 	GPIO_PinInit(ANALOG_GPIO, ANALOG_READY_PIN, &ready_pin_config);
+	EnableIRQ(ANALOG_READY_IRQ);
 }
 
 
@@ -119,7 +113,8 @@ static void analog_pin_init(void)
 		1,
 	};
 	
-	GPIO_PinInit(ANALOG_SPI_GPIO, ANALOG_SPI_CS_ADC, &pga_cs_config);
+	GPIO_PinInit(ANALOG_SPI_GPIO, ANALOG_SPI_CS_PGA, &pga_cs_config);
+	
 }
 
 void analog_init(void)
@@ -147,13 +142,31 @@ void analog_stop(void)
 	analog_ready_callback = NULL;
 }
 
-uint32_t analog_get_reading(void)
+bool analog_get_reading(uint64_t *analog)
 {
-	uint32_t read_data = 0x23;
+	enum
+	{
+		ADC_CONFIG_WORD_DF32 = 0x56,
+		ANALOG_nV_PER_LSB    = 596
+	};
+	bool success = false;
+	uint8_t read_data[4];
 	
 	SELECT_CHIP(ANALOG_SPI_CS_ADC);
-	spi_transaction(NULL, (uint8_t *)&read_data, sizeof(read_data));
+	spi_transaction(NULL, read_data, sizeof(read_data));
 	DESELECT_CHIP(ANALOG_SPI_CS_ADC);
 	
-	return read_data;
+	// Separate the voltage value and the "configuration" word
+	uint64_t analog_value_int = read_data[0] << 16
+		| read_data[1] << 8
+		| read_data[2];
+	uint8_t config_word = read_data[3];
+	
+	if (config_word == ADC_CONFIG_WORD_DF32)
+	{
+		// This is a valid reading
+		*analog = analog_value_int * ANALOG_nV_PER_LSB;
+		success = true;
+	}
+	return success;
 }

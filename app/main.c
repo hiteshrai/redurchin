@@ -31,36 +31,38 @@ static void analog_ready_callback(void)
 
 int main(void)
 {
-	uint32_t reading = 0;
-	
 	hardware_init();
 	usb_cdc_init();
 	clock_init();
 	
 	uint32_t last_usb_send_tick = clock_get_tick();
-	uint8_t command = 0x01;
 	analog_init();	
 	
 	analog_start(1000, analog_ready_callback);
+	uint32_t last_time = clock_get_tick();
 	
 	while (1)
 	{
 		usb_cdc_task();
+		uint32_t current_time = clock_get_tick();
 		
 		if (analog_ready_data)
 		{
-			reading = analog_get_reading();
+			uint64_t reading_nV;
+			if (analog_get_reading(&reading_nV))
+			{
+				if (clock_get_elapsed_time_ms(current_time, last_time) > 1000)
+				{
+					last_time = current_time;
+					
+					uint32_t integer_voltage = reading_nV / 1000000000;
+					uint32_t fraction_voltage = reading_nV % 1000000000;
+					char buffer[50];
+					int len = snprintf(buffer, sizeof(buffer) - 1, "Voltage: %ld.%09ld\r\n", integer_voltage, fraction_voltage);
+					usb_cdc_write((uint8_t *)buffer, len);	
+				}				
+			}
 			analog_ready_data = false;
-			
-			char buffer[50];
-			int len = snprintf(buffer, sizeof(buffer) - 1, "Voltage: %d\r\n", (int)reading);
-			usb_cdc_write((uint8_t *)buffer, len);
-		}
-		
-		if (clock_get_elapsed_time_ms(clock_get_tick(), last_usb_send_tick) >= 1000)
-		{
-			usb_cdc_write((uint8_t *)"HELLO\r\n", 7);
-			last_usb_send_tick = clock_get_tick();
 		}
 	}
 }
