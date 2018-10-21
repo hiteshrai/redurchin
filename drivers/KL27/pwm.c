@@ -30,7 +30,7 @@
 void pwm_init(uint32_t freq)
 {
 	tpm_config_t tpm_config;
-	uint8_t updatedDutycycle = 1U;
+	uint8_t updatedDutycycle = 20U;
 	tpm_chnl_pwm_signal_param_t tpm_param;
 
 	/* Configure ftm params with frequency 24kHZ */

@@ -9,7 +9,7 @@
 /*******************************************************************************
 * Definitions
 ******************************************************************************/
-
+#define MCLK_FREQ              1600000U
 
 /*******************************************************************************
 * Variables
@@ -38,7 +38,7 @@ int main(void)
 	uint32_t last_usb_send_tick = clock_get_tick();
 	analog_init();	
 	
-	analog_start(1000, analog_ready_callback);
+	analog_start(MCLK_FREQ, analog_ready_callback);
 	uint32_t last_time = clock_get_tick();
 	
 	while (1)

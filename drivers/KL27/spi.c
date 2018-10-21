@@ -12,7 +12,7 @@
 #define SPI_MASTER_SOURCE_CLOCK            kCLOCK_BusClk
 #define SPI_MASTER_CLK_FREQ                CLOCK_GetFreq(kCLOCK_BusClk)
 
-#define TRANSFER_BAUDRATE                  50000U /*! Transfer baudrate - 500k */
+#define TRANSFER_BAUDRATE                  4000000U 
 
 /*******************************************************************************
  * Prototypes

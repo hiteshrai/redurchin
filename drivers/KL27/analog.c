@@ -114,7 +114,6 @@ static void analog_pin_init(void)
 	};
 	
 	GPIO_PinInit(ANALOG_SPI_GPIO, ANALOG_SPI_CS_PGA, &pga_cs_config);
-	
 }
 
 void analog_init(void)
