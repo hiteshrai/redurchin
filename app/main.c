@@ -40,12 +40,24 @@ int main(void)
 	
 	analog_start(MCLK_FREQ, analog_ready_callback);
 	uint32_t last_time = clock_get_tick();
-	
+    uint32_t initial_time = clock_get_tick();
 	while (1)
 	{
 		usb_cdc_task();
 		uint32_t current_time = clock_get_tick();
-		
+    	
+    	if (clock_get_elapsed_time_ms(current_time, last_time) >= 1)
+    	{
+        	last_time = current_time;
+        	char message[20];
+        	static int print_count = 0;
+        	sprintf(message,
+            	"test:%d:%d\r\n",
+            	print_count++,
+                (int)clock_get_elapsed_time_ms(current_time, initial_time));
+        	usb_cdc_write((uint8_t*)message, strlen(message));
+    	}
+    	
 		if (analog_ready_data)
 		{
 			uint64_t reading_nV;
