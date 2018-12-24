@@ -703,6 +703,12 @@ bool usb_cdc_write(uint8_t * data, uint32_t length)
 {
 	int i;
 	uint32_t available_buffer_size = (m_tx_tail - m_tx_head - 1) & TRANSMIT_BUFFER_MASK;
+    
+    if (((1 != s_cdcVcom.attach) || (1 != s_cdcVcom.startTransactions)))
+    {
+        // Not ready yet
+        return false;
+    }
 	
 	if (available_buffer_size < length)
 	{
