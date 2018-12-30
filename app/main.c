@@ -11,6 +11,13 @@
 ******************************************************************************/
 #define MCLK_FREQ              100000U
 #define HARDWARE_DOWNSAMPLING  32
+#define OUTPUT_BUFFER_LEN      200
+
+#define SEND_TIMESTAMP  0x01
+#define SEND_GAIN       0x02
+#define SEND_RATE       0X04
+
+#define ANALOG_GAIN     1
 
 /*******************************************************************************
 * Variables
@@ -18,6 +25,8 @@
 static volatile bool analog_ready_data = false;
 static uint32_t sample_frequency = 1;
 static uint32_t transfer_sample_count;
+static char output_buffer[OUTPUT_BUFFER_LEN];
+static int send_mask = SEND_TIMESTAMP;
 
 /*******************************************************************************
 * Prototypes
@@ -41,6 +50,45 @@ static void analog_ready_callback(void)
 {
 	// Set the flag indicating that an analog read is available
 	analog_ready_data = true;
+}
+
+static void send_reading_output(uint64_t reading_nV, int rate_hz, float gain, bool missed_reading)
+{
+    static bool missed_send = false;
+    uint32_t integer_voltage = reading_nV / 1000000000;
+    uint32_t fraction_voltage = reading_nV % 1000000000;
+
+    // Data is formatted as JSON
+    int output_len = 0;
+    output_len += sprintf(&output_buffer[output_len], "{");
+    output_len += sprintf(&output_buffer[output_len], "id:redurchin");
+    output_len += sprintf(&output_buffer[output_len], ",voltage:%ld.%09ld", integer_voltage, fraction_voltage);
+    if (missed_reading)
+    {
+        output_len += sprintf(&output_buffer[output_len], ",missed_reading:1");
+    }
+    if (missed_send)
+    {
+        output_len += sprintf(&output_buffer[output_len], ",missed_send:1");
+    }
+    if (send_mask & SEND_TIMESTAMP)
+    {
+        output_len += sprintf(&output_buffer[output_len],
+            ",timestamp_ms:%ld",
+            clock_get_time_ms());
+    }
+    if (send_mask & SEND_GAIN)
+    {
+        output_len += sprintf(&output_buffer[output_len], ",gain:%f", gain);
+    }
+    if (send_mask & SEND_RATE)
+    {
+        output_len += sprintf(&output_buffer[output_len], ",rate_hz:%d", rate_hz);
+    }
+    
+    output_len += sprintf(&output_buffer[output_len], "}\r\n");
+
+    missed_send = !usb_cdc_write((uint8_t *)output_buffer, output_len);
 }
 
 int main(void)
@@ -79,19 +127,8 @@ int main(void)
 			}
 			if (sample_count >= transfer_sample_count)
 			{
-				if (missed_reading)
-				{
-					len = snprintf(buffer, sizeof(buffer) - 1, "Missed a reading\r\n");
-				}
-				else
-				{
-					uint64_t reading_nV_avg = reading_nV_sum / transfer_sample_count;
-					uint32_t integer_voltage = reading_nV / 1000000000;
-					uint32_t fraction_voltage = reading_nV % 1000000000;
-					len = snprintf(buffer, sizeof(buffer) - 1, "Voltage: %ld.%09ld\r\n", integer_voltage, fraction_voltage);
-				}
-				
-				usb_cdc_write((uint8_t *)buffer, len);	
+    			uint64_t reading_nV_avg = reading_nV_sum / transfer_sample_count;
+    			send_reading_output(reading_nV_avg, sample_frequency, ANALOG_GAIN, missed_reading);
 				reading_nV_sum = 0;
 				sample_count = 0;
 				missed_reading = false;
