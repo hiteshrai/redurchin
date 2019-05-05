@@ -8,11 +8,11 @@
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
-#define SPI_MASTER_BASEADDR                SPI0
+#define SPI_MASTER_BASEADDR                SPI1
 #define SPI_MASTER_SOURCE_CLOCK            kCLOCK_BusClk
 #define SPI_MASTER_CLK_FREQ                CLOCK_GetFreq(kCLOCK_BusClk)
 
-#define TRANSFER_BAUDRATE                  4000000U 
+#define TRANSFER_BAUDRATE                  10000000U 
 
 /*******************************************************************************
  * Prototypes

@@ -185,6 +185,9 @@
     <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\drivers\fsl_tpm.c">
       <Filter>thirdparty</Filter>
     </ClCompile>
+    <ClCompile Include="drivers\KL27\ui.c">
+      <Filter>drivers\KL27</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="drivers\KL27\usb_device_cdc_acm.h">
@@ -231,6 +234,9 @@
     </ClInclude>
     <ClInclude Include="drivers\KL27\pwm.h">
       <Filter>drivers\KL27</Filter>
+    </ClInclude>
+    <ClInclude Include="drivers\ui.h">
+      <Filter>drivers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -19,15 +19,18 @@
 #define PGA_REG_GAIN              0x00
 #define PGA_REG_MUX               0x06
 
-#define PGA_REG_MUX_INIT          0x60
+#define PGA_REG_MUX_INIT          0x68
 #define PGA_REG_GAIN_UNITY        0x18
+
+#define ANALOG_fV_PER_LSB         2328306
+
 
 // IRQ handling
 #define ANALOG_READY_IRQ          PORTB_PORTC_PORTD_PORTE_IRQn
 #define ANALOG_READY_IRQ_HANDLER  PORTBCDE_IRQHandler
 
-#define SELECT_CHIP(x)            GPIO_PinWrite(ANALOG_SPI_GPIO, x, 0)
-#define DESELECT_CHIP(x)          GPIO_PinWrite(ANALOG_SPI_GPIO, x, 1)
+#define SELECT_CHIP(gpio, x)            GPIO_PinWrite(gpio, x, 0)
+#define DESELECT_CHIP(gpio, x)          GPIO_PinWrite(gpio, x, 1)
 
 /*******************************************************************************
  * Prototypes
@@ -72,13 +75,13 @@ static void setup_pga(void)
 	uint8_t mux_data[] = { PGA_WRITE_COMMAND | PGA_REG_MUX, PGA_REG_MUX_INIT };
 	uint8_t gain_data[] = { PGA_WRITE_COMMAND | PGA_REG_GAIN, PGA_REG_GAIN_UNITY };
 	
-	SELECT_CHIP(ANALOG_SPI_CS_PGA);
+	SELECT_CHIP(ANALOG_GPIO, ANALOG_PGA_CS_PIN);
 	spi_transaction(mux_data, NULL, sizeof(mux_data));
-	DESELECT_CHIP(ANALOG_SPI_CS_PGA);
+	DESELECT_CHIP(ANALOG_GPIO, ANALOG_PGA_CS_PIN);
 	
-	SELECT_CHIP(ANALOG_SPI_CS_PGA);
+	SELECT_CHIP(ANALOG_GPIO, ANALOG_PGA_CS_PIN);
 	spi_transaction(gain_data, NULL, sizeof(gain_data));
-	DESELECT_CHIP(ANALOG_SPI_CS_PGA);
+	DESELECT_CHIP(ANALOG_GPIO, ANALOG_PGA_CS_PIN);
 	
 	spi_deinit();
 }
@@ -87,7 +90,7 @@ static void analog_pin_init(void)
 {
 	/* Configure MCLK pin to use as PWM and READY pin as an GPIO */
 	CLOCK_EnableClock(ANALOG_CLOCK);
-	PORT_SetPinMux(ANALOG_PORT, ANALOG_MCLK_PIN, kPORT_MuxAlt3);
+	PORT_SetPinMux(ANALOG_PORT, ANALOG_MCLK_PIN, kPORT_MuxAlt4);
 	PORT_SetPinMux(ANALOG_PORT, ANALOG_READY_PIN, kPORT_MuxAsGpio);
 	
 	/* Configure SPI bus*/
@@ -96,7 +99,7 @@ static void analog_pin_init(void)
 	PORT_SetPinMux(ANALOG_SPI_PORT, ANALOG_SPI_MOSI, kPORT_MuxAlt2);
 	PORT_SetPinMux(ANALOG_SPI_PORT, ANALOG_SPI_CLK, kPORT_MuxAlt2);
 	
-	PORT_SetPinMux(ANALOG_SPI_PORT, ANALOG_SPI_CS_PGA, kPORT_MuxAsGpio);
+	PORT_SetPinMux(ANALOG_PORT, ANALOG_PGA_CS_PIN, kPORT_MuxAsGpio);
 	PORT_SetPinMux(ANALOG_SPI_PORT, ANALOG_SPI_CS_ADC, kPORT_MuxAsGpio);
 	
 	gpio_pin_config_t adc_cs_config = 
@@ -113,7 +116,26 @@ static void analog_pin_init(void)
 		1,
 	};
 	
-	GPIO_PinInit(ANALOG_SPI_GPIO, ANALOG_SPI_CS_PGA, &pga_cs_config);
+	GPIO_PinInit(ANALOG_GPIO, ANALOG_PGA_CS_PIN, &pga_cs_config);
+	
+	PORT_SetPinMux(ANALOG_PORT, ANALOG_ADC_SEL0_PIN, kPORT_MuxAsGpio);
+	PORT_SetPinMux(ANALOG_PORT, ANALOG_ADC_SEL1_PIN, kPORT_MuxAsGpio);
+	
+	gpio_pin_config_t sel0_config = 
+	{
+		kGPIO_DigitalOutput,
+		0,
+	};
+	
+	GPIO_PinInit(ANALOG_GPIO, ANALOG_ADC_SEL0_PIN, &sel0_config);
+	
+	gpio_pin_config_t sel1_config = 
+	{
+		kGPIO_DigitalOutput,
+		0,
+	};
+	
+	GPIO_PinInit(ANALOG_GPIO, ANALOG_ADC_SEL1_PIN, &sel1_config);
 }
 
 void analog_init(void)
@@ -141,31 +163,40 @@ void analog_stop(void)
 	analog_ready_callback = NULL;
 }
 
-bool analog_get_reading(uint64_t *analog)
+bool analog_get_raw_reading(int64_t *analog)
 {
 	enum
 	{
-		ADC_CONFIG_WORD_DF32 = 0x56,
-		ANALOG_nV_PER_LSB    = 596
+		ADC_CONFIG_WORD_DF32 = 0x85,
 	};
 	bool success = false;
-	uint8_t read_data[4];
+	uint8_t read_data[5];
 	
-	SELECT_CHIP(ANALOG_SPI_CS_ADC);
+	SELECT_CHIP(ANALOG_SPI_GPIO, ANALOG_SPI_CS_ADC);
 	spi_transaction(NULL, read_data, sizeof(read_data));
-	DESELECT_CHIP(ANALOG_SPI_CS_ADC);
+	DESELECT_CHIP(ANALOG_SPI_GPIO, ANALOG_SPI_CS_ADC);
 	
 	// Separate the voltage value and the "configuration" word
-	uint64_t analog_value_int = read_data[0] << 16
-		| read_data[1] << 8
-		| read_data[2];
-	uint8_t config_word = read_data[3];
+	int64_t analog_value_int = read_data[0] << 24
+		| read_data[1] << 16
+		| read_data[2] << 8
+		| read_data[3];
+	uint8_t config_word = read_data[4];
 	
 	if (config_word == ADC_CONFIG_WORD_DF32)
 	{
 		// This is a valid reading
-		*analog = analog_value_int * ANALOG_nV_PER_LSB;
+		*analog = analog_value_int;// * ANALOG_fV_PER_LSB;
 		success = true;
 	}
+	else
+	{
+		success = false;
+	}
 	return success;
+}
+
+uint32_t analog_get_raw_to_fV_factor(void)
+{
+    return ANALOG_fV_PER_LSB;
 }

@@ -19,16 +19,23 @@
 #define ANALOG_SPI_CLOCK        kCLOCK_PortD
 #define ANALOG_SPI_PORT         PORTD
 #define ANALOG_SPI_GPIO         GPIOD
-#define ANALOG_SPI_MISO         3
-#define ANALOG_SPI_MOSI         2
-#define ANALOG_SPI_CLK          1
-#define ANALOG_SPI_CS_PGA       4
-#define ANALOG_SPI_CS_ADC       5
+#define ANALOG_SPI_MISO         7
+#define ANALOG_SPI_MOSI         6
+#define ANALOG_SPI_CLK          5
+#define ANALOG_SPI_CS_ADC       4
 
-#define ANALOG_CLOCK            kCLOCK_PortB
-#define ANALOG_PORT             PORTB
-#define ANALOG_GPIO             GPIOB
-#define ANALOG_MCLK_PIN         2
-#define ANALOG_READY_PIN        3
+#define ANALOG_CLOCK            kCLOCK_PortC
+#define ANALOG_PORT             PORTC
+#define ANALOG_GPIO             GPIOC
+#define ANALOG_MCLK_PIN         4
+#define ANALOG_READY_PIN        7
+#define ANALOG_ADC_SEL0_PIN     3
+#define ANALOG_ADC_SEL1_PIN     2
+#define ANALOG_PGA_CS_PIN       1
+
+#define UI_LED_CLOCK            kCLOCK_PortA
+#define UI_LED_PORT             PORTA
+#define UI_LED_GPIO             GPIOA
+#define UI_LED_PIN              2
 
 #endif 

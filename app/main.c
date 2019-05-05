@@ -1,23 +1,25 @@
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "usb_cdc.h"
 #include "hardware.h"
 #include "clock.h"
 #include "analog.h"
+#include "ui.h"
 
 /*******************************************************************************
 * Definitions
 ******************************************************************************/
-#define MCLK_FREQ              100000U
-#define HARDWARE_DOWNSAMPLING  32
+#define MCLK_FREQ              1000000U
+#define HARDWARE_DOWNSAMPLING  256
 #define OUTPUT_BUFFER_LEN      200
 
-#define SEND_TIMESTAMP  0x01
-#define SEND_GAIN       0x02
-#define SEND_RATE       0X04
+#define SEND_TIMESTAMP         0x01
+#define SEND_GAIN              0x02
+#define SEND_RATE              0X04
 
-#define ANALOG_GAIN     1
+#define ANALOG_GAIN            1
 
 /*******************************************************************************
 * Variables
@@ -52,11 +54,11 @@ static void analog_ready_callback(void)
 	analog_ready_data = true;
 }
 
-static void send_reading_output(uint64_t reading_nV, int rate_hz, float gain, bool missed_reading)
+static void send_reading_output(int64_t reading_nV, int rate_hz, float gain, bool missed_reading)
 {
     static bool missed_send = false;
-    uint32_t integer_voltage = reading_nV / 1000000000;
-    uint32_t fraction_voltage = reading_nV % 1000000000;
+    int32_t integer_voltage = reading_nV / 1000000000;
+    uint32_t fraction_voltage = abs((int32_t)(reading_nV % 1000000000));
 
     // Data is formatted as JSON
     int output_len = 0;
@@ -93,18 +95,22 @@ static void send_reading_output(uint64_t reading_nV, int rate_hz, float gain, bo
 
 int main(void)
 {
-	uint64_t reading_nV_sum = 0;
+	int64_t reading_raw_sum = 0;
 	bool missed_reading = false;
 	uint32_t sample_count = 0;
 
 	hardware_init();
 	usb_cdc_init();
 	clock_init();
+	ui_init();
 	
 	analog_init();		
 	analog_start(MCLK_FREQ, analog_ready_callback);
 	
 	transfer_sample_count = get_sample_count_from_frequency(sample_frequency);
+	
+	uint32_t last_led_change_tick = clock_get_tick();
+	uint8_t last_led_state = 1;
 	
 	while (1)
 	{
@@ -115,11 +121,11 @@ int main(void)
 		if (analog_ready_data)
 		{
 			char buffer[50];
-			uint64_t reading_nV;
+			int64_t reading_raw;
 			sample_count++;
-			if (analog_get_reading(&reading_nV))
+    		if (analog_get_raw_reading(&reading_raw))
 			{
-				reading_nV_sum += reading_nV;
+				reading_raw_sum += reading_raw;
 			}
 			else
 			{
@@ -127,14 +133,21 @@ int main(void)
 			}
 			if (sample_count >= transfer_sample_count)
 			{
-    			uint64_t reading_nV_avg = reading_nV_sum / transfer_sample_count;
-    			send_reading_output(reading_nV_avg, sample_frequency, ANALOG_GAIN, missed_reading);
-				reading_nV_sum = 0;
+    			int64_t reading_raw_avg = reading_raw_sum / transfer_sample_count;
+				send_reading_output((reading_raw_avg / 1000000) * analog_get_raw_to_fV_factor(), sample_frequency, ANALOG_GAIN, missed_reading);
+				reading_raw_sum = 0;
 				sample_count = 0;
 				missed_reading = false;
 			}
 
 			analog_ready_data = false;
+		}
+		
+		if (clock_get_elapsed_time_ms(clock_get_tick(), last_led_change_tick) >= 1000)
+		{
+			ui_led_set_clear(last_led_state);
+			last_led_state ^= 1;
+			last_led_change_tick = clock_get_tick();
 		}
 	}
 }

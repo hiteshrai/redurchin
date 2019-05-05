@@ -70,6 +70,7 @@
     <ClCompile Include="drivers\KL27\pin_mux.c" />
     <ClCompile Include="drivers\KL27\pwm.c" />
     <ClCompile Include="drivers\KL27\spi.c" />
+    <ClCompile Include="drivers\KL27\ui.c" />
     <ClCompile Include="drivers\KL27\usb_cdc.c" />
     <ClCompile Include="drivers\KL27\usb_device_cdc_acm.c" />
     <ClCompile Include="drivers\KL27\usb_device_ch9.c" />
@@ -105,6 +106,7 @@
     <ClInclude Include="drivers\KL27\usb_device_config.h" />
     <ClInclude Include="drivers\KL27\usb_device_descriptor.h" />
     <ClInclude Include="drivers\KL27\virtual_com.h" />
+    <ClInclude Include="drivers\ui.h" />
     <ClInclude Include="drivers\usb_cdc.h" />
     <None Include="kinetis.props" />
     <ClInclude Include="$(BSP_ROOT)\platform\CMSIS\Include\arm_common_tables.h" />

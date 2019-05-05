@@ -6,8 +6,8 @@
  * Definitions
  ******************************************************************************/
 /* The Flextimer instance/channel used for board */
-#define PWM_BASEADDR                   TPM2
-#define PWM_CHANNEL                    0U
+#define PWM_BASEADDR                   TPM0
+#define PWM_CHANNEL                    3U
 
 /* Get source clock for FTM driver */
 #define PWM_SOURCE_CLOCK               CLOCK_GetFreq(kCLOCK_McgIrc48MClk)
@@ -30,7 +30,7 @@
 void pwm_init(uint32_t freq)
 {
 	tpm_config_t tpm_config;
-	uint8_t updatedDutycycle = 20U;
+	uint8_t updatedDutycycle = 50U;
 	tpm_chnl_pwm_signal_param_t tpm_param;
 
 	/* Configure ftm params with frequency 24kHZ */

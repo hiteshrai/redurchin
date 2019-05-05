@@ -13,6 +13,7 @@ typedef void(*analog_ready_callback_t)(void);
 void analog_init(void);
 void analog_start(uint32_t freq, analog_ready_callback_t cb);
 void analog_stop(void);
-bool analog_get_reading(uint64_t *analog);
+bool analog_get_raw_reading(int64_t *analog);
+uint32_t analog_get_raw_to_fV_factor(void);
 
 #endif /* _ANALOG_H_ */
