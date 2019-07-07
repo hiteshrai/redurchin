@@ -53,7 +53,7 @@
 
 /*! @brief Timeout times for waiting flag. */
 #ifndef I2C_WAIT_TIMEOUT
-#define I2C_WAIT_TIMEOUT 0U /* Define to zero means keep waiting until the flag is assert/deassert. */
+#define I2C_WAIT_TIMEOUT 100000U /* Define to zero means keep waiting until the flag is assert/deassert. */
 #endif
 
 #if (defined(FSL_FEATURE_I2C_HAS_START_STOP_DETECT) && FSL_FEATURE_I2C_HAS_START_STOP_DETECT || \

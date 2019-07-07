@@ -7,6 +7,7 @@
 #include "clock.h"
 #include "analog.h"
 #include "ui.h"
+#include "temperature.h"
 
 /*******************************************************************************
 * Definitions
@@ -39,6 +40,8 @@ static int user_cmd_length = 0;
 static bool user_cmd_received = false;
 
 static bool dark_mode = false;
+
+static int last_temperature_in_C = 0;
 
 /*******************************************************************************
 * Prototypes
@@ -88,6 +91,7 @@ static void send_reading_output(int64_t reading_nV, int rate_hz, bool missed_rea
     output_len += sprintf(&output_buffer[output_len], "{");
     output_len += sprintf(&output_buffer[output_len], "\"id\":\"redurchin\"");
     output_len += sprintf(&output_buffer[output_len], ",\"voltage\":%ld.%09ld", integer_voltage, fraction_voltage);
+	output_len += sprintf(&output_buffer[output_len], ",\"temperature\":%d", last_temperature_in_C);
     if (missed_reading)
     {
         output_len += sprintf(&output_buffer[output_len], ",missed_reading:1");
@@ -236,6 +240,7 @@ int main(void)
     usb_cdc_set_receive_callback(usb_data_callback);
 	clock_init();
 	ui_init();
+    temperature_init();
 	
 	analog_init();		
 	analog_start(MCLK_FREQ, analog_ready_callback);
@@ -243,6 +248,7 @@ int main(void)
 	transfer_sample_count = get_sample_count_from_frequency(sample_frequency);
 	
 	uint32_t last_led_change_tick = clock_get_tick();
+	uint32_t last_temperature_read_tick = clock_get_tick();
 	uint8_t last_led_state = 1;
 	
 	while (1)
@@ -266,6 +272,14 @@ int main(void)
 			}
 			if (sample_count >= transfer_sample_count)
 			{
+				if (clock_get_elapsed_time_ms(clock_get_tick(), last_temperature_read_tick) >= 1000)
+				{
+					if (temperature_get_reading(&last_temperature_in_C))
+					{
+						last_temperature_read_tick = clock_get_tick();
+					}
+				}
+				
     			int64_t reading_raw_avg = reading_raw_sum / transfer_sample_count;
     			send_reading_output((reading_raw_avg / 1000000) * analog_get_raw_to_fV_factor(),
         			sample_frequency,
@@ -280,17 +294,17 @@ int main(void)
     	
     	handle_user_command();
 		
-       	if (clock_get_elapsed_time_ms(clock_get_tick(), last_led_change_tick) >= 10)
-        {
-            if (dark_mode)
-            {
-                ui_darken();
-            }
-            else
-            {
-                ui_brighten();                
-            }
-            last_led_change_tick = clock_get_tick();
-        }        	
+		if (clock_get_elapsed_time_ms(clock_get_tick(), last_led_change_tick) >= 10)
+		{
+			if (dark_mode)
+			{
+				ui_darken();
+			}
+			else
+			{
+				ui_brighten();                
+			}
+			last_led_change_tick = clock_get_tick();
+		}
 	}
 }

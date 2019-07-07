@@ -66,10 +66,13 @@
     <ClCompile Include="drivers\KL27\board.c" />
     <ClCompile Include="drivers\KL27\clock.c" />
     <ClCompile Include="drivers\KL27\clock_config.c" />
+    <ClCompile Include="drivers\KL27\eeprom.c" />
     <ClCompile Include="drivers\KL27\hardware.c" />
+    <ClCompile Include="drivers\KL27\i2c.c" />
     <ClCompile Include="drivers\KL27\pin_mux.c" />
     <ClCompile Include="drivers\KL27\pwm.c" />
     <ClCompile Include="drivers\KL27\spi.c" />
+    <ClCompile Include="drivers\KL27\temperature.c" />
     <ClCompile Include="drivers\KL27\ui.c" />
     <ClCompile Include="drivers\KL27\usb_cdc.c" />
     <ClCompile Include="drivers\KL27\usb_device_cdc_acm.c" />
@@ -80,6 +83,7 @@
     <ClCompile Include="thirdparty\BSP\vectors_KL27Z644.c" />
     <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\drivers\fsl_clock.c" />
     <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\drivers\fsl_gpio.c" />
+    <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\drivers\fsl_i2c.c" />
     <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\drivers\fsl_lptmr.c" />
     <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\drivers\fsl_lpuart.c" />
     <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\drivers\fsl_spi.c" />
@@ -94,10 +98,12 @@
     <ClCompile Include="thirdparty\Kinetis-SDK\middleware\usb\osa\usb_osa_bm.c" />
     <ClInclude Include="drivers\analog.h" />
     <ClInclude Include="drivers\clock.h" />
+    <ClInclude Include="drivers\eeprom.h" />
     <ClInclude Include="drivers\hardware.h" />
     <ClInclude Include="drivers\KL27\board.h" />
     <ClInclude Include="drivers\KL27\clock_config.h" />
     <ClInclude Include="drivers\KL27\custom_board.h" />
+    <ClInclude Include="drivers\KL27\i2c.h" />
     <ClInclude Include="drivers\KL27\pin_mux.h" />
     <ClInclude Include="drivers\KL27\pwm.h" />
     <ClInclude Include="drivers\KL27\spi.h" />
@@ -106,6 +112,7 @@
     <ClInclude Include="drivers\KL27\usb_device_config.h" />
     <ClInclude Include="drivers\KL27\usb_device_descriptor.h" />
     <ClInclude Include="drivers\KL27\virtual_com.h" />
+    <ClInclude Include="drivers\temperature.h" />
     <ClInclude Include="drivers\ui.h" />
     <ClInclude Include="drivers\usb_cdc.h" />
     <None Include="kinetis.props" />

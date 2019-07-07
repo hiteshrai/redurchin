@@ -16,6 +16,11 @@
 #define UART_RX_PIN             16
 #define UART_TX_PIN             17
 
+#define I2C_CLOCK               kCLOCK_PortB
+#define I2C_PORT                PORTB
+#define I2C_SCL_PIN             0
+#define I2C_SDA_PIN             1
+
 #define ANALOG_SPI_CLOCK        kCLOCK_PortD
 #define ANALOG_SPI_PORT         PORTD
 #define ANALOG_SPI_GPIO         GPIOD

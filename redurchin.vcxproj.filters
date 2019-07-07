@@ -188,6 +188,18 @@
     <ClCompile Include="drivers\KL27\ui.c">
       <Filter>drivers\KL27</Filter>
     </ClCompile>
+    <ClCompile Include="drivers\KL27\i2c.c">
+      <Filter>drivers\KL27</Filter>
+    </ClCompile>
+    <ClCompile Include="drivers\KL27\temperature.c">
+      <Filter>drivers\KL27</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\Kinetis-SDK\devices\MKL27Z644\drivers\fsl_i2c.c">
+      <Filter>thirdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="drivers\KL27\eeprom.c">
+      <Filter>drivers\KL27</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="drivers\KL27\usb_device_cdc_acm.h">
@@ -237,6 +249,15 @@
     </ClInclude>
     <ClInclude Include="drivers\ui.h">
       <Filter>drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="drivers\KL27\i2c.h">
+      <Filter>drivers\KL27</Filter>
+    </ClInclude>
+    <ClInclude Include="drivers\temperature.h">
+      <Filter>drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="drivers\eeprom.h">
+      <Filter>drivers\KL27</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
