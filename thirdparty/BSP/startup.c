@@ -70,7 +70,7 @@ void __attribute__((naked, noreturn)) Reset_Handler()
    /* NV_FSEC: KEYEN=1,MEEN=3,FSLACC=3,SEC=2 */
     0x7EU,
    /* NV_FOPT: ??=1,??=1,FAST_INIT=1,LPBOOT1=1,RESET_PIN_CFG=1,NMI_DIS=1,??=1,LPBOOT0=1 */
-    0xFFU,
+    0xFDU,
     0xFFU,
     0xFFU
   };
