@@ -21,14 +21,26 @@
 
 #define ANALOG_GAIN            1
 
+#define MAX_USER_CMD_LENGTH    50
+
 /*******************************************************************************
 * Variables
 ******************************************************************************/
 static volatile bool analog_ready_data = false;
 static uint32_t sample_frequency = 1;
-static uint32_t transfer_sample_count;
+static volatile uint32_t transfer_sample_count;
 static char output_buffer[OUTPUT_BUFFER_LEN];
 static int send_mask = SEND_TIMESTAMP;
+
+static int64_t reading_raw_sum = 0;
+static bool missed_reading = false;
+static uint32_t sample_count = 0;
+
+static char user_cmd[MAX_USER_CMD_LENGTH + 1];
+static int user_cmd_length = 0;
+static bool user_cmd_received = false;
+
+static bool dark_mode = false;
 
 /*******************************************************************************
 * Prototypes
@@ -93,14 +105,93 @@ static void send_reading_output(int64_t reading_nV, int rate_hz, float gain, boo
     missed_send = !usb_cdc_write((uint8_t *)output_buffer, output_len);
 }
 
+static void usb_data_callback(uint8_t *data, uint32_t length)
+{
+    uint8_t *end_data = data + length;
+    while (data < end_data)
+    {
+        if (!user_cmd_received)
+        {
+            if (('\n' == *data) || ('\r' == *data))
+            {
+                // Null-terminate the command
+                user_cmd[user_cmd_length] = '\0';
+                user_cmd_length = 0;
+                user_cmd_received = true;
+                break;
+            }
+            else if (user_cmd_length < MAX_USER_CMD_LENGTH)
+            {
+                user_cmd[user_cmd_length++] = *data;
+            }
+            else
+            {
+                // Too long - start over
+                user_cmd_length = 0;
+            }
+        }
+        data++;
+    }
+}
+
+void set_gain(float gain)
+{
+}
+
+void set_rate(int rate)
+{
+    sample_frequency = rate;
+    transfer_sample_count = get_sample_count_from_frequency(sample_frequency);
+    
+    // Clear out variables so we get a clean sum
+    reading_raw_sum = 0;
+    sample_count = 0;
+    missed_reading = false;
+}
+
+void set_dark_mode(void)
+{
+    dark_mode = true;
+}
+
+bool handle_user_command(void)
+{
+    bool command_handled = false;
+    if (user_cmd_received)
+    {
+        char *cmd_data = NULL;
+        char *colon_location = strchr(user_cmd, ':');
+        if (colon_location)
+        {
+            // There is a data portion
+            cmd_data = colon_location + 1;
+            *colon_location = '\0';
+        }
+        if ((0 == strcmp("GAIN", user_cmd)) && cmd_data)
+        {
+            set_gain(atof(cmd_data));
+            command_handled = true;
+        }
+        else if ((0 == strcmp("RATE", user_cmd)) && cmd_data)
+        {
+            set_rate(atoi(cmd_data));
+            command_handled = true;
+        }
+        else if (0 == strcmp("DARK", user_cmd))
+        {
+            set_dark_mode();
+            command_handled = true;
+        }
+        user_cmd_received = false;
+    }
+    return command_handled;
+}
+
 int main(void)
 {
-	int64_t reading_raw_sum = 0;
-	bool missed_reading = false;
-	uint32_t sample_count = 0;
-
 	hardware_init();
 	usb_cdc_init();
+    usb_cdc_set_receive_callback(usb_data_callback);
 	clock_init();
 	ui_init();
 	
@@ -142,11 +233,20 @@ int main(void)
 
 			analog_ready_data = false;
 		}
+    	
+    	handle_user_command();
 		
-		if (clock_get_elapsed_time_ms(clock_get_tick(), last_led_change_tick) >= 10)
-		{
-      		ui_brighten();
-    		last_led_change_tick = clock_get_tick();
-		}
+       	if (clock_get_elapsed_time_ms(clock_get_tick(), last_led_change_tick) >= 10)
+        {
+            if (dark_mode)
+            {
+                ui_darken();
+            }
+            else
+            {
+                ui_brighten();                
+            }
+            last_led_change_tick = clock_get_tick();
+        }        	
 	}
 }

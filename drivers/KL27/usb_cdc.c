@@ -113,6 +113,8 @@ static volatile bool transmit_in_progress = false;
 
 static usb_cdc_receive rx_callback = NULL;
 
+static bool usb_connected = false;
+
 /*******************************************************************************
 * Prototypes
 ******************************************************************************/
@@ -651,6 +653,8 @@ void usb_cdc_task(void)
 	usb_status_t error = kStatus_USB_Error;
 	if ((1 == s_cdcVcom.attach) && (1 == s_cdcVcom.startTransactions))
 	{
+    	usb_connected = true;
+    	
 		/* User Code */
 		if ((0 != s_recvSize) && (0xFFFFFFFFU != s_recvSize))
 		{
@@ -746,4 +750,9 @@ bool usb_cdc_write(uint8_t * data, uint32_t length)
 void usb_cdc_set_receive_callback(usb_cdc_receive rx)
 {
 	rx_callback = rx;
+}
+
+bool usb_cdc_is_connected(void)
+{
+    return usb_connected;
 }
