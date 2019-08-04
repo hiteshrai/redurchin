@@ -36,6 +36,6 @@
 #define UI_LED_CLOCK            kCLOCK_PortA
 #define UI_LED_PORT             PORTA
 #define UI_LED_GPIO             GPIOA
-#define UI_LED_PIN              2
+#define UI_LED_PIN              1
 
 #endif 

@@ -32,6 +32,16 @@
 #define SELECT_CHIP(gpio, x)            GPIO_PinWrite(gpio, x, 0)
 #define DESELECT_CHIP(gpio, x)          GPIO_PinWrite(gpio, x, 1)
 
+// MCLK PWM
+#define MCLK_PWM_BASEADDR                   TPM0
+#define MCLK_PWM_CHANNEL                    3U
+
+pwm_info_t mclk_pwm_info = 
+{ 
+    .baseaddr = MCLK_PWM_BASEADDR,
+    .channel  = MCLK_PWM_CHANNEL,
+};
+
 /*******************************************************************************
  * Prototypes
  ******************************************************************************/
@@ -150,7 +160,8 @@ void analog_start(uint32_t freq, analog_ready_callback_t cb)
     setup_rdy_pin();
 	
 	// Initialize MCLK pin for 2512-24 ADC chip.
-	pwm_init(freq);	
+	pwm_init(&mclk_pwm_info, freq);
+    pwm_set_duty_cycle(&mclk_pwm_info, 50);
 	
 	spi_init();
 	
@@ -159,7 +170,7 @@ void analog_start(uint32_t freq, analog_ready_callback_t cb)
 
 void analog_stop(void)
 {
-	pwm_deinit();
+    pwm_deinit(&mclk_pwm_info);
 	analog_ready_callback = NULL;
 }
 

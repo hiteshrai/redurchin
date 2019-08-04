@@ -143,11 +143,10 @@ int main(void)
 			analog_ready_data = false;
 		}
 		
-		if (clock_get_elapsed_time_ms(clock_get_tick(), last_led_change_tick) >= 1000)
+		if (clock_get_elapsed_time_ms(clock_get_tick(), last_led_change_tick) >= 10)
 		{
-			ui_led_set_clear(last_led_state);
-			last_led_state ^= 1;
-			last_led_change_tick = clock_get_tick();
+      		ui_brighten();
+    		last_led_change_tick = clock_get_tick();
 		}
 	}
 }

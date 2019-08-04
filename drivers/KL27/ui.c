@@ -30,19 +30,27 @@
 #include "fsl_gpio.h"
 
 #include "custom_board.h"
-
+#include "pwm.h"
 
 
 #include "ui.h"
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
-
+// UI PWM
+#define UI_PWM_BASEADDR                   TPM2
+#define UI_PWM_CHANNEL                    0U
 
 /*******************************************************************************
  * Variables
  ******************************************************************************/
+pwm_info_t ui_pwm_info = 
+{ 
+    .baseaddr = UI_PWM_BASEADDR,
+    .channel = UI_PWM_CHANNEL,
+};
 
+static int current_brightness = 0;
 
 /*******************************************************************************
  * Code
@@ -50,18 +58,28 @@
 void ui_init(void)
 {
 	CLOCK_EnableClock(UI_LED_CLOCK);
-	PORT_SetPinMux(UI_LED_PORT, UI_LED_PIN, kPORT_MuxAsGpio);
+    PORT_SetPinMux(UI_LED_PORT, UI_LED_PIN, kPORT_MuxAlt3);
 	
-	gpio_pin_config_t ui_led_config = 
-	{
-		kGPIO_DigitalOutput,
-		0,
-	};
-	
-	GPIO_PinInit(UI_LED_GPIO, UI_LED_PIN, &ui_led_config);
+    pwm_init(&ui_pwm_info, 1000);
+    pwm_set_duty_cycle(&ui_pwm_info, current_brightness);
 }
 
-void ui_led_set_clear(uint8_t output)
+void ui_brighten(void)
 {
-	GPIO_WritePinOutput(UI_LED_GPIO, UI_LED_PIN, output);
+    current_brightness++;
+    if (current_brightness > 100)
+    {
+        current_brightness = 100;
+    }
+    pwm_set_duty_cycle(&ui_pwm_info, current_brightness);
+}
+
+void ui_darken(void)
+{
+    current_brightness--;
+    if (current_brightness < 0)
+    {
+        current_brightness = 0;
+    }
+    pwm_set_duty_cycle(&ui_pwm_info, current_brightness);    
 }

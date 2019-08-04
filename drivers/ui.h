@@ -12,6 +12,7 @@
  * API
  ******************************************************************************/
 void ui_init(void);
-void ui_led_set_clear(uint8_t output);
+void ui_brighten(void);
+void ui_darken(void);
 
 #endif /* HARDWARE_H_ */
