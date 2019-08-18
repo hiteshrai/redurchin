@@ -36,11 +36,20 @@
 #define MCLK_PWM_BASEADDR                   TPM0
 #define MCLK_PWM_CHANNEL                    3U
 
+#define DEFAULT_PGA_GAIN                    1.000f
+
 pwm_info_t mclk_pwm_info = 
 { 
     .baseaddr = MCLK_PWM_BASEADDR,
     .channel  = MCLK_PWM_CHANNEL,
 };
+
+typedef struct 
+{
+    float gain;
+    uint8_t reg_gain_value;
+    uint8_t num_shift;
+} pga_gain_settings_t;
 
 /*******************************************************************************
  * Prototypes
@@ -49,8 +58,26 @@ pwm_info_t mclk_pwm_info =
 /*******************************************************************************
  * Variables
  ******************************************************************************/
-analog_ready_callback_t analog_ready_callback = NULL;
+static analog_ready_callback_t analog_ready_callback = NULL;
 
+static pga_gain_settings_t pga_gain_settings[] = { 
+    { 0.125,   0x00, 0x03 },
+    { 0.250,   0x01, 0x02 },
+    { 0.500,   0x02, 0x01 },
+    { 1.000,   0x03, 0x00 },
+    { 2.000,   0x04, 0x01 },
+    { 4.000,   0x05, 0x02 },
+    { 8.000,   0x06, 0x03 },
+    { 16.000,  0x07, 0x04 },
+    { 32.000,  0x08, 0x05 },
+    { 64.000,  0x09, 0x06 },
+    { 128.000, 0x0A, 0x07 },
+};
+
+#define NUM_PGA_GAIN_SETTINGS     sizeof(pga_gain_settings) / sizeof(pga_gain_settings[0])
+
+static float current_analog_gain = 0.0f;
+static uint8_t current_analog_shift = 0.0f;
 
 /*******************************************************************************
  * Code
@@ -83,15 +110,12 @@ static void setup_pga(void)
 {
 	spi_init();
 	uint8_t mux_data[] = { PGA_WRITE_COMMAND | PGA_REG_MUX, PGA_REG_MUX_INIT };
-	uint8_t gain_data[] = { PGA_WRITE_COMMAND | PGA_REG_GAIN, PGA_REG_GAIN_UNITY };
 	
 	SELECT_CHIP(ANALOG_GPIO, ANALOG_PGA_CS_PIN);
 	spi_transaction(mux_data, NULL, sizeof(mux_data));
 	DESELECT_CHIP(ANALOG_GPIO, ANALOG_PGA_CS_PIN);
 	
-	SELECT_CHIP(ANALOG_GPIO, ANALOG_PGA_CS_PIN);
-	spi_transaction(gain_data, NULL, sizeof(gain_data));
-	DESELECT_CHIP(ANALOG_GPIO, ANALOG_PGA_CS_PIN);
+    analog_set_gain(DEFAULT_PGA_GAIN);
 	
 	spi_deinit();
 }
@@ -210,4 +234,43 @@ bool analog_get_raw_reading(int64_t *analog)
 uint32_t analog_get_raw_to_fV_factor(void)
 {
     return ANALOG_fV_PER_LSB;
+}
+
+bool analog_set_gain(float gain)
+{
+    bool success = false;
+    uint8_t gain_data[2] = { PGA_WRITE_COMMAND | PGA_REG_GAIN, PGA_REG_GAIN_UNITY };
+    uint8_t shift_num = 0;
+    
+    for (int i = 0; i < NUM_PGA_GAIN_SETTINGS; i++)
+    {
+        if (pga_gain_settings[i].gain == gain)
+        {
+            gain_data[1] = (pga_gain_settings[i].reg_gain_value) << 3;
+            shift_num = pga_gain_settings[i].num_shift;
+            success = true;
+            break;
+        }
+    }
+    
+    if (success)
+    {
+        SELECT_CHIP(ANALOG_GPIO, ANALOG_PGA_CS_PIN);
+        success = spi_transaction(gain_data, NULL, sizeof(gain_data));
+        DESELECT_CHIP(ANALOG_GPIO, ANALOG_PGA_CS_PIN);
+        
+        if (success)
+        {
+            current_analog_gain = gain;
+            current_analog_shift = shift_num;
+        }
+    }
+        
+    return success;
+}
+
+float analog_get_current_gain(uint8_t *shift_value)
+{
+    *shift_value = current_analog_shift;
+    return current_analog_gain;
 }

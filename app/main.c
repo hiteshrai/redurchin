@@ -19,8 +19,6 @@
 #define SEND_GAIN              0x02
 #define SEND_RATE              0X04
 
-#define ANALOG_GAIN            1
-
 #define MAX_USER_CMD_LENGTH    50
 
 /*******************************************************************************
@@ -30,7 +28,7 @@ static volatile bool analog_ready_data = false;
 static uint32_t sample_frequency = 1;
 static volatile uint32_t transfer_sample_count;
 static char output_buffer[OUTPUT_BUFFER_LEN];
-static int send_mask = SEND_TIMESTAMP;
+static int send_mask = SEND_TIMESTAMP | SEND_GAIN | SEND_RATE;
 
 static int64_t reading_raw_sum = 0;
 static bool missed_reading = false;
@@ -66,17 +64,30 @@ static void analog_ready_callback(void)
 	analog_ready_data = true;
 }
 
-static void send_reading_output(int64_t reading_nV, int rate_hz, float gain, bool missed_reading)
+static void send_reading_output(int64_t reading_nV, int rate_hz, bool missed_reading)
 {
     static bool missed_send = false;
+    uint8_t num_shift;
+    float analog_gain = analog_get_current_gain(&num_shift);
+    
+    // Adjust the reading voltage based of the gain
+    if(analog_gain < 1.0f)
+    {
+        reading_nV <<= num_shift;
+    }
+    else
+    {
+        reading_nV >>= num_shift;
+    }
+    
     int32_t integer_voltage = reading_nV / 1000000000;
     uint32_t fraction_voltage = abs((int32_t)(reading_nV % 1000000000));
 
     // Data is formatted as JSON
     int output_len = 0;
     output_len += sprintf(&output_buffer[output_len], "{");
-    output_len += sprintf(&output_buffer[output_len], "id:redurchin");
-    output_len += sprintf(&output_buffer[output_len], ",voltage:%ld.%09ld", integer_voltage, fraction_voltage);
+    output_len += sprintf(&output_buffer[output_len], "\"id\":\"redurchin\"");
+    output_len += sprintf(&output_buffer[output_len], ",\"voltage\":%ld.%09ld", integer_voltage, fraction_voltage);
     if (missed_reading)
     {
         output_len += sprintf(&output_buffer[output_len], ",missed_reading:1");
@@ -88,16 +99,17 @@ static void send_reading_output(int64_t reading_nV, int rate_hz, float gain, boo
     if (send_mask & SEND_TIMESTAMP)
     {
         output_len += sprintf(&output_buffer[output_len],
-            ",timestamp_ms:%ld",
+            ",\"timestamp_ms\":%ld",
             clock_get_time_ms());
     }
     if (send_mask & SEND_GAIN)
     {
-        output_len += sprintf(&output_buffer[output_len], ",gain:%f", gain);
+        uint32_t int_gain = analog_gain * 1000;
+        output_len += sprintf(&output_buffer[output_len], ",\"gain\":%ld.%ld", int_gain / 1000, int_gain % 1000);
     }
     if (send_mask & SEND_RATE)
     {
-        output_len += sprintf(&output_buffer[output_len], ",rate_hz:%d", rate_hz);
+        output_len += sprintf(&output_buffer[output_len], ",\"rate_hz\":%d", rate_hz);
     }
     
     output_len += sprintf(&output_buffer[output_len], "}\r\n");
@@ -136,6 +148,7 @@ static void usb_data_callback(uint8_t *data, uint32_t length)
 
 void set_gain(float gain)
 {
+    analog_set_gain(gain);
 }
 
 void set_rate(int rate)
@@ -225,7 +238,9 @@ int main(void)
 			if (sample_count >= transfer_sample_count)
 			{
     			int64_t reading_raw_avg = reading_raw_sum / transfer_sample_count;
-				send_reading_output((reading_raw_avg / 1000000) * analog_get_raw_to_fV_factor(), sample_frequency, ANALOG_GAIN, missed_reading);
+    			send_reading_output((reading_raw_avg / 1000000) * analog_get_raw_to_fV_factor(),
+        			sample_frequency,
+        			missed_reading);
 				reading_raw_sum = 0;
 				sample_count = 0;
 				missed_reading = false;
