@@ -167,6 +167,35 @@ void set_dark_mode(void)
     dark_mode = true;
 }
 
+float get_decimal_from_string(char *str)
+{
+    // Walk the string. If anything isn't a number, we are done
+    // Keep track of how many characters were processed, so we know
+    // what to divide by
+    int denominator = 1;
+    int numerator = 0;
+    while (*str >= '0' && *str <= '9')
+    {
+        numerator = numerator * 10 + (*str - '0');
+        denominator *= 10;
+        str++;
+    }
+    return ((float) numerator) / denominator;
+}
+
+float gain_from_string(char *str)
+{
+    float gain;
+    char *period_location = strchr(str, '.');
+    if (period_location)
+    {
+        // Parse out the decimal (fractional) portion after the decimal point
+        gain += get_decimal_from_string(period_location + 1);
+    }
+    gain += atoi(str);
+    return gain;
+}
+
 bool handle_user_command(void)
 {
     bool command_handled = false;
@@ -182,7 +211,7 @@ bool handle_user_command(void)
         }
         if ((0 == strcmp("GAIN", user_cmd)) && cmd_data)
         {
-            set_gain(atof(cmd_data));
+            set_gain(gain_from_string(cmd_data));
             command_handled = true;
         }
         else if ((0 == strcmp("RATE", user_cmd)) && cmd_data)
