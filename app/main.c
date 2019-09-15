@@ -40,6 +40,7 @@ static int user_cmd_length = 0;
 static bool user_cmd_received = false;
 
 static bool dark_mode = false;
+static bool in_voltage_mode = true;
 
 static int last_temperature_in_C = 0;
 
@@ -67,30 +68,51 @@ static void analog_ready_callback(void)
 	analog_ready_data = true;
 }
 
-static void send_reading_output(int64_t reading_nV, int rate_hz, bool missed_reading)
+static void send_reading_output(int64_t reading, bool reading_is_in_nanovolts, int rate_hz, bool missed_reading)
 {
     static bool missed_send = false;
     uint8_t num_shift;
     float analog_gain = analog_get_current_gain(&num_shift);
     
-    // Adjust the reading voltage based of the gain
-    if(analog_gain < 1.0f)
-    {
-        reading_nV <<= num_shift;
-    }
-    else
-    {
-        reading_nV >>= num_shift;
-    }
-    
-    int32_t integer_voltage = reading_nV / 1000000000;
-    uint32_t fraction_voltage = abs((int32_t)(reading_nV % 1000000000));
-
     // Data is formatted as JSON
     int output_len = 0;
     output_len += sprintf(&output_buffer[output_len], "{");
     output_len += sprintf(&output_buffer[output_len], "\"id\":\"redurchin\"");
-    output_len += sprintf(&output_buffer[output_len], ",\"voltage\":%ld.%09ld", integer_voltage, fraction_voltage);
+    
+    // Only adjust the reading based on the gain if we are sending "voltage" readings, as opposed to raw readings
+    if(reading_is_in_nanovolts)
+    {
+        int64_t reading_nV = reading;
+        // Adjust the reading voltage based of the gain
+        if(analog_gain < 1.0f)
+        {
+            reading_nV <<= num_shift;
+        }
+        else
+        {
+            reading_nV >>= num_shift;
+        }
+    
+        int32_t integer_voltage = reading_nV / 1000000000;
+        uint32_t fraction_voltage = abs((int32_t)(reading_nV % 1000000000));
+        
+        output_len += sprintf(&output_buffer[output_len], ",\"voltage\":%ld.%09ld", integer_voltage, fraction_voltage);
+    }
+    else
+    {
+        int32_t high_order_portion = reading / 1000000000;
+        if (high_order_portion != 0)
+        {
+            uint32_t low_order_portion = abs((int32_t)(reading % 1000000000));
+            output_len += sprintf(&output_buffer[output_len], ",\"raw\":%ld%09ld", high_order_portion, low_order_portion);
+        }
+        else
+        {
+            int32_t low_order_portion = (int32_t)(reading % 1000000000);
+            output_len += sprintf(&output_buffer[output_len], ",\"raw\":%ld", low_order_portion);            
+        }
+    }
+
 	output_len += sprintf(&output_buffer[output_len], ",\"temperature\":%d", last_temperature_in_C);
     if (missed_reading)
     {
@@ -150,12 +172,12 @@ static void usb_data_callback(uint8_t *data, uint32_t length)
     }
 }
 
-void set_gain(float gain)
+static void set_gain(float gain)
 {
     analog_set_gain(gain);
 }
 
-void set_rate(int rate)
+static void set_rate(int rate)
 {
     sample_frequency = rate;
     transfer_sample_count = get_sample_count_from_frequency(sample_frequency);
@@ -166,12 +188,17 @@ void set_rate(int rate)
     missed_reading = false;
 }
 
-void set_dark_mode(void)
+static void set_dark_mode(void)
 {
     dark_mode = true;
 }
 
-float get_decimal_from_string(char *str)
+static void set_raw_mode(void)
+{
+    in_voltage_mode = false;
+}
+
+static float get_decimal_from_string(char *str)
 {
     // Walk the string. If anything isn't a number, we are done
     // Keep track of how many characters were processed, so we know
@@ -187,7 +214,7 @@ float get_decimal_from_string(char *str)
     return ((float) numerator) / denominator;
 }
 
-float gain_from_string(char *str)
+static float gain_from_string(char *str)
 {
     float gain;
     char *period_location = strchr(str, '.');
@@ -200,7 +227,7 @@ float gain_from_string(char *str)
     return gain;
 }
 
-bool handle_user_command(void)
+static bool handle_user_command(void)
 {
     bool command_handled = false;
     if (user_cmd_received)
@@ -226,6 +253,11 @@ bool handle_user_command(void)
         else if (0 == strcmp("DARK", user_cmd))
         {
             set_dark_mode();
+            command_handled = true;
+        }
+        else if (0 == strcmp("RAW", user_cmd))
+        {
+            set_raw_mode();
             command_handled = true;
         }
         user_cmd_received = false;
@@ -281,10 +313,22 @@ int main(void)
 				}
 				
     			int64_t reading_raw_avg = reading_raw_sum / transfer_sample_count;
-    			send_reading_output((reading_raw_avg / 1000000) * analog_get_raw_to_fV_factor(),
-        			sample_frequency,
-        			missed_reading);
-				reading_raw_sum = 0;
+    			if (in_voltage_mode)
+    			{
+        			send_reading_output((reading_raw_avg / 1000000) * analog_get_raw_to_fV_factor(),
+            			true,
+            			sample_frequency,
+            			missed_reading);        			
+    			}
+    			else
+    			{
+        			send_reading_output(reading_raw_avg,
+            			false,
+            			sample_frequency,
+            			missed_reading);
+    			}
+
+    			reading_raw_sum = 0;
 				sample_count = 0;
 				missed_reading = false;
 			}
