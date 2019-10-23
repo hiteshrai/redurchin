@@ -315,7 +315,7 @@ int main(void)
     			int64_t reading_raw_avg = reading_raw_sum / transfer_sample_count;
     			if (in_voltage_mode)
     			{
-        			send_reading_output((reading_raw_avg / 1000000) * analog_get_raw_to_fV_factor(),
+        			send_reading_output(reading_raw_avg * analog_get_raw_to_fV_factor() / 1000000,
             			true,
             			sample_frequency,
             			missed_reading);        			
