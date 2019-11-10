@@ -200,6 +200,12 @@
     <ClCompile Include="drivers\KL27\eeprom.c">
       <Filter>drivers\KL27</Filter>
     </ClCompile>
+    <ClCompile Include="app\command.c">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="app\calibration.c">
+      <Filter>app</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="drivers\KL27\usb_device_cdc_acm.h">
@@ -258,6 +264,12 @@
     </ClInclude>
     <ClInclude Include="drivers\eeprom.h">
       <Filter>drivers\KL27</Filter>
+    </ClInclude>
+    <ClInclude Include="app\calibration.h">
+      <Filter>app</Filter>
+    </ClInclude>
+    <ClInclude Include="app\command.h">
+      <Filter>app</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

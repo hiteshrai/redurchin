@@ -8,6 +8,8 @@
 #include "analog.h"
 #include "ui.h"
 #include "temperature.h"
+#include "calibration.h"
+#include "command.h"
 
 /*******************************************************************************
 * Definitions
@@ -315,7 +317,15 @@ int main(void)
     			int64_t reading_raw_avg = reading_raw_sum / transfer_sample_count;
     			if (in_voltage_mode)
     			{
-        			send_reading_output(reading_raw_avg * analog_get_raw_to_fV_factor() / 1000000,
+        			uint8_t num_shift;
+        			float analog_gain = analog_get_current_gain(&num_shift);
+
+        			// Correct the average reading using calibration data
+        			int64_t output_reading;
+        			calibration_adjust_voltage_reading(analog_gain, reading_raw_avg, &output_reading);
+        			
+        			// Send corrected value
+        			send_reading_output(output_reading * analog_get_raw_to_fV_factor() / 1000000,
             			true,
             			sample_frequency,
             			missed_reading);        			

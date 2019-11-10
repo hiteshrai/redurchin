@@ -10,9 +10,9 @@
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
-#define CALIBRATION_DATA_LENGTH    10
-#define CALIBRATION_DATA_ADDRESS   0
-#define EEPROM_I2C_ADDRESS         0x50
+#define MAX_EEPROM_DATA_LENGTH          50
+#define EEPROM_I2C_BASE_ADDRESS         0x50
+#define TOTAL_EEPROM_SIZE               512
 
 /*******************************************************************************
  * Prototypes
@@ -22,41 +22,57 @@
 /*******************************************************************************
  * Variables
  ******************************************************************************/
-uint8_t calibration_data[CALIBRATION_DATA_LENGTH];
+
 
 /*******************************************************************************
  * Code
  ******************************************************************************/
-bool eeprom_read_calibration_data(void)
+bool eeprom_read_data(uint32_t address, uint8_t *data, uint32_t length)
 {
 	bool result;
 	bool success = false;
     
 	// Setup the starting address to read from
-	uint8_t reg_address = CALIBRATION_DATA_ADDRESS;
-	result = i2c_write(EEPROM_I2C_ADDRESS, &reg_address, 1);
+	uint8_t reg_address = address & 0xFF;
+	result = i2c_write(EEPROM_I2C_BASE_ADDRESS, &reg_address, sizeof(reg_address));
 	if (result)
 	{
-		result = i2c_read(EEPROM_I2C_ADDRESS, calibration_data, CALIBRATION_DATA_LENGTH);
+    	result = i2c_read(EEPROM_I2C_BASE_ADDRESS, data, length);
 		success = result;
 	}
+    return success;
 }
 
-bool eeprom_write_calibration_data(void)
+bool eeprom_write_data(uint32_t address, uint8_t *data, uint32_t length)
 {
-	uint8_t calibration_address_and_data[sizeof(uint8_t) + CALIBRATION_DATA_LENGTH];
-	calibration_address_and_data[0] = CALIBRATION_DATA_ADDRESS;
-	memcpy(calibration_address_and_data + sizeof(uint8_t), calibration_data, CALIBRATION_DATA_LENGTH);
-	return i2c_write(EEPROM_I2C_ADDRESS,
+    uint8_t calibration_address_and_data[sizeof(uint8_t) + MAX_EEPROM_DATA_LENGTH];
+    
+    if (length > MAX_EEPROM_DATA_LENGTH)
+    {
+        return false;
+    }
+	calibration_address_and_data[0] = address & 0xFF;
+	memcpy(calibration_address_and_data + sizeof(uint8_t), data, length);
+	return i2c_write(EEPROM_I2C_BASE_ADDRESS,
 		calibration_address_and_data,
 		sizeof(calibration_address_and_data));
+}
+
+bool eeprom_erase(void)
+{
+    enum
+    {
+        ERASE_CHUNK_BYTES = 0x10,
+    };
+    uint8_t erase_bytes[ERASE_CHUNK_BYTES] = { 0 };
+    for (int erase_addr = 0; erase_addr < TOTAL_EEPROM_SIZE; erase_addr += ERASE_CHUNK_BYTES)
+    {
+        eeprom_write_data(erase_addr, erase_bytes, ERASE_CHUNK_BYTES);
+    }
 }
 
 bool eeprom_init(void)
 {
 	i2c_init();
-	eeprom_read_calibration_data();
-	calibration_data[0]++;
-	eeprom_write_calibration_data();
 	return true;
 }

@@ -61,6 +61,8 @@
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
   <ItemGroup>
+    <ClCompile Include="app\calibration.c" />
+    <ClCompile Include="app\command.c" />
     <ClCompile Include="app\main.c" />
     <ClCompile Include="drivers\KL27\analog.c" />
     <ClCompile Include="drivers\KL27\board.c" />
@@ -96,6 +98,8 @@
     <ClCompile Include="thirdparty\Kinetis-SDK\middleware\usb\device\usb_device_dci.c" />
     <ClCompile Include="thirdparty\Kinetis-SDK\middleware\usb\device\usb_device_khci.c" />
     <ClCompile Include="thirdparty\Kinetis-SDK\middleware\usb\osa\usb_osa_bm.c" />
+    <ClInclude Include="app\calibration.h" />
+    <ClInclude Include="app\command.h" />
     <ClInclude Include="drivers\analog.h" />
     <ClInclude Include="drivers\clock.h" />
     <ClInclude Include="drivers\eeprom.h" />
