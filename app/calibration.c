@@ -119,7 +119,122 @@ bool calibration_init(void)
     return gain_count > 0;
 }
 
+bool calibration_write_gain(gain_calibration_t calibration)
+{
+    bool success = false;
+    int gain_index;
+    
+    // Is this an update to an existing gain, or a new gain?
+    for(gain_index = 0 ; gain_index < gain_count ; gain_index++)
+    {
+        if (calibration.gain == gain_calibration[gain_index].gain)
+        {
+            // Match
+            break;
+        }
+    }
+    
+    if (gain_index < MAX_CALIB_GAINS)
+    {
+        // Write to EEPROM and then update cache
+        if(eeprom_write_data(CALIBRATION_VOLT_START_ADDR + gain_index * sizeof(gain_calibration_t),
+            (uint8_t*)&calibration,
+            sizeof(gain_calibration_t)))
+        {
+            gain_calibration[gain_index] = calibration;
+            success = true;
+            if (gain_index + 1 > gain_count)
+            {
+                gain_count = gain_index + 1;
+            }
+        }
+    }
+    return success;
+}
+
+bool calibration_read_gain(int index, gain_calibration_t *calibration)
+{
+    bool valid = index < gain_count;
+    if (valid)
+    {
+        *calibration = gain_calibration[index];
+    }
+    return valid;
+}
+
+int calibration_get_num_calibrations(void)
+{
+    return gain_count;
+}
+
+int64_t interpolate_voltage_adjustment(int64_t input_reading, int64_t low_voltage, int64_t high_voltage, int64_t low_error, int64_t high_error)
+{
+    if (low_voltage == high_voltage)
+    {
+        // This is a step function. Average the errors and add it.
+        return input_reading + (low_error + high_error) / 2;
+    }
+    
+    int64_t adjustment = (input_reading - low_voltage) * (high_error - low_error) / (high_voltage - low_voltage);
+    
+    return input_reading + adjustment;
+}
+
 bool calibration_adjust_voltage_reading(float gain, int64_t input_reading, int64_t *output_reading)
 {
-    
+    // Find the matching gain
+    int gain_index;
+    for (gain_index = 0; gain_index < gain_count; gain_index++)
+    {
+        if (gain_calibration[gain_index].gain == gain)
+        {
+            break;
+        }
+    }
+    if (gain_index < gain_count)
+    {
+        // Found a matching table - interpolate/extrapolate to convert input to output
+        gain_calibration_t *cal = &gain_calibration[gain_index];
+        int section_index;
+        for (section_index = 0; section_index < NUM_CALIB_POINTS_PER_GAIN; section_index++)
+        {
+            if (input_reading <= cal->cal_points[section_index].input_voltage)
+            {
+                break;
+            }
+        }
+        if (section_index == 0)
+        {
+            // Extrapolating down
+            interpolate_voltage_adjustment(input_reading, 
+                cal->cal_points[0].input_voltage,
+                cal->cal_points[1].input_voltage,
+                cal->cal_points[0].error,
+                cal->cal_points[1].error);
+
+        }
+        else if (section_index == NUM_CALIB_POINTS_PER_GAIN)
+        {
+            // Extrapolating up
+            section_index--;
+            interpolate_voltage_adjustment(input_reading, 
+                cal->cal_points[section_index - 1].input_voltage,
+                cal->cal_points[section_index].input_voltage,
+                cal->cal_points[section_index - 1].error,
+                cal->cal_points[section_index].error);
+
+        }
+        else
+        {
+            interpolate_voltage_adjustment(input_reading, 
+                cal->cal_points[section_index - 1].input_voltage,
+                cal->cal_points[section_index].input_voltage,
+                cal->cal_points[section_index - 1].error,
+                cal->cal_points[section_index].error);
+        }
+    }
+    else
+    {
+        return false;
+    }
 }
