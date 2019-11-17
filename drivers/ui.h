@@ -12,7 +12,6 @@
  * API
  ******************************************************************************/
 void ui_init(void);
-void ui_brighten(void);
-void ui_darken(void);
+void ui_update(void);
 
 #endif /* HARDWARE_H_ */

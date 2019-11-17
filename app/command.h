@@ -18,7 +18,8 @@
 * API
 ******************************************************************************/
 void command_init(void);
-bool command_handle(void);
+void command_loop(void);
+bool command_is_dark_mode(void);
 
 
 #endif /* _COMMAND_H_ */

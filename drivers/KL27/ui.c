@@ -34,6 +34,9 @@
 
 
 #include "ui.h"
+#include "drivers/clock.h"
+#include "app/command.h"
+
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
@@ -51,10 +54,31 @@ pwm_info_t ui_pwm_info =
 };
 
 static int current_brightness = 0;
+static uint32_t last_led_change_tick = 0;
 
 /*******************************************************************************
  * Code
  ******************************************************************************/
+void ui_brighten(void)
+{
+	current_brightness++;
+	if (current_brightness > 100)
+	{
+		current_brightness = 100;
+	}
+	pwm_set_duty_cycle(&ui_pwm_info, current_brightness);
+}
+
+void ui_darken(void)
+{
+	current_brightness--;
+	if (current_brightness < 0)
+	{
+		current_brightness = 0;
+	}
+	pwm_set_duty_cycle(&ui_pwm_info, current_brightness);    
+}
+
 void ui_init(void)
 {
 	CLOCK_EnableClock(UI_LED_CLOCK);
@@ -62,24 +86,23 @@ void ui_init(void)
 	
     pwm_init(&ui_pwm_info, 1000);
     pwm_set_duty_cycle(&ui_pwm_info, current_brightness);
+	
+	last_led_change_tick = clock_get_tick();
 }
 
-void ui_brighten(void)
+void ui_update(void)
 {
-    current_brightness++;
-    if (current_brightness > 100)
-    {
-        current_brightness = 100;
-    }
-    pwm_set_duty_cycle(&ui_pwm_info, current_brightness);
-}
-
-void ui_darken(void)
-{
-    current_brightness--;
-    if (current_brightness < 0)
-    {
-        current_brightness = 0;
-    }
-    pwm_set_duty_cycle(&ui_pwm_info, current_brightness);    
+	if (clock_get_elapsed_time_ms(clock_get_tick(), last_led_change_tick) >= 10)
+	{
+		if (command_is_dark_mode())
+		{
+			ui_darken();
+		}
+		else
+		{
+			ui_brighten();                
+		}
+		
+		last_led_change_tick = clock_get_tick();
+	}
 }
