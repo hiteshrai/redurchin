@@ -206,7 +206,7 @@ bool calibration_adjust_voltage_reading(float gain, int64_t input_reading, int64
         if (section_index == 0)
         {
             // Extrapolating down
-            interpolate_voltage_adjustment(input_reading, 
+            *output_reading = interpolate_voltage_adjustment(input_reading, 
                 cal->cal_points[0].input_voltage,
                 cal->cal_points[1].input_voltage,
                 cal->cal_points[0].error,
@@ -217,7 +217,7 @@ bool calibration_adjust_voltage_reading(float gain, int64_t input_reading, int64
         {
             // Extrapolating up
             section_index--;
-            interpolate_voltage_adjustment(input_reading, 
+            *output_reading = interpolate_voltage_adjustment(input_reading, 
                 cal->cal_points[section_index - 1].input_voltage,
                 cal->cal_points[section_index].input_voltage,
                 cal->cal_points[section_index - 1].error,
@@ -226,15 +226,17 @@ bool calibration_adjust_voltage_reading(float gain, int64_t input_reading, int64
         }
         else
         {
-            interpolate_voltage_adjustment(input_reading, 
+            *output_reading = interpolate_voltage_adjustment(input_reading, 
                 cal->cal_points[section_index - 1].input_voltage,
                 cal->cal_points[section_index].input_voltage,
                 cal->cal_points[section_index - 1].error,
                 cal->cal_points[section_index].error);
         }
+        return true;
     }
     else
     {
+        *output_reading = input_reading;
         return false;
     }
 }
